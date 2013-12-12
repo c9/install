@@ -29,37 +29,37 @@ case "$uname" in
   *armv6l*) arch=arm-pi ;;
 esac
 
-# # download source files for tmux, libevent, and ncurses
-# wget -O tmux-1.6.tar.gz http://sourceforge.net/projects/tmux/files/tmux/tmux-1.6/tmux-1.6.tar.gz/download
-# wget https://github.com/downloads/libevent/libevent/libevent-2.0.19-stable.tar.gz
-# wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz
+# download source files for tmux, libevent, and ncurses
+wget -O tmux-1.6.tar.gz http://sourceforge.net/projects/tmux/files/tmux/tmux-1.6/tmux-1.6.tar.gz/download
+wget https://github.com/downloads/libevent/libevent/libevent-2.0.19-stable.tar.gz
+wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz
 
-# # extract files, configure, and compile
+# extract files, configure, and compile
 
-# ############
-# # libevent #
-# ############
-# tar xvzf libevent-2.0.19-stable.tar.gz
-# cd libevent-2.0.19-stable
-# ./configure --prefix=$BASE/local --disable-shared
-# make
-# make install
-# cd ..
+############
+# libevent #
+############
+tar xvzf libevent-2.0.19-stable.tar.gz
+cd libevent-2.0.19-stable
+./configure --prefix=$BASE/local --disable-shared
+make
+make install
+cd ..
 
-# ############
-# # ncurses  #
-# ############
-# tar xvzf ncurses-5.9.tar.gz
-# cd ncurses-5.9
-# ./configure --prefix=$BASE/local
-# make
-# make install
-# cd ..
+############
+# ncurses  #
+############
+tar xvzf ncurses-5.9.tar.gz
+cd ncurses-5.9
+./configure --prefix=$BASE/local
+make
+make install
+cd ..
 
-# # ###########
-# # tmux     #
-# # ###########
-# tar xvzf tmux-1.6.tar.gz
+# ###########
+# tmux     #
+# ###########
+tar xvzf tmux-1.6.tar.gz
 cd tmux-1.6
 if [ $os = 'darwin' ]; then
   ./configure CFLAGS="-I$BASE/local/include -I$BASE/local/include/ncurses" LDFLAGS="-static-libgcc -L$BASE/local/lib -L$BASE/local/include/ncurses -L$BASE/local/include"
@@ -71,7 +71,7 @@ cp tmux $BASE/local/bin
 cd ..
 
 # cleanup
-# rm -rf $BASE/tmux_tmp
+rm -rf $BASE/tmux_tmp
 
 # package
 tar -cvzf $DIR/tmux-$os-$arch.tar.gz $BASE/local

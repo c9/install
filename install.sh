@@ -130,8 +130,12 @@ node(){
 tmux(){
   echo :Installing TMUX
 
+  curl -sSOL https://raw.github.com/c9/install/master/packages/tmux/tmux-$1-$2.tar.gz
+  tar xvfz tmux-$1-$2.tar.gz
+  rm tmux-$1-$2.tar.gz
+
   rm -f ~/.c9/bin/tmux
-  ln -s `which tmux` ~/.c9/bin
+  ln -s ~/.c9/local/bin/tmux ~/.c9/bin/tmux
 }
 
 nak(){

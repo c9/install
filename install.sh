@@ -8,6 +8,7 @@ has() {
 # test for prereqs
 if ! has "curl"; then
   echo 'Cloud9 installer needs curl to proceed.' >&2;
+  exit 1
 fi
 
 NPM=$HOME/.c9/node/bin/npm
@@ -37,12 +38,12 @@ start() {
   
   if [ $os != "linux" ] && [ $os != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
-    exit
+    exit 1
   fi
   
   if [ $arch != "x64" ] && [ $arch != "x86" ]; then
     echo "Unsupported Architecture: $os $arch" 1>&2
-    exit
+    exit 1
   fi
   
   case $1 in

@@ -93,7 +93,7 @@ start() {
       # finalize
       for FILE in $HOME/.c9/node_modules/.bin/* 
       do
-          perl -i -p -e 's/#!\/usr\/bin\/env node/#!'${NODE//\//\\\/}'/' $(readlink $FILE)
+          perl -i -p -e 's/#!\/usr\/bin\/env node/#!'${NODE//\//\\\/}'/' $(readlink -f $FILE)
       done
       
       echo 1 > $HOME/.c9/installed

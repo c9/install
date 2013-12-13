@@ -134,7 +134,12 @@ node(){
 tmux(){
   echo :Installing TMUX
   if [ $os = "darwin" ]; then
-    brew install tmux
+    
+    if ! has "brew"; then
+        ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go/install)"
+    fi
+    brew install tmux > /dev/null
+    rm -f ~/.c9/bin/tmux
     ln -s $(which tmux) ~/.c9/bin/tmux
   else
     curl -sSOL https://raw.github.com/c9/install/fix-tar/packages/tmux/tmux-$1-$2.tar.gz

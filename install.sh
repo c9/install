@@ -93,7 +93,7 @@ start() {
       # finalize
       for FILE in $HOME/.c9/node_modules/.bin/* 
       do
-          perl -i -p -e 's/#!\/usr\/bin\/env node/#!'${NODE//\//\\\/}'/' $(readlink -f $FILE)
+          perl -i -p -e 's/#!\/usr\/bin\/env node/#!'${NODE//\//\\\/}'/' $(readlink $FILE)
       done
       
       echo 1 > $HOME/.c9/installed
@@ -131,12 +131,12 @@ node(){
 tmux(){
   echo :Installing TMUX
 
-  curl -sSOL https://raw.github.com/c9/install/master/packages/tmux/tmux-$1-$2.tar.gz
+  curl -sSOL https://raw.github.com/c9/install/fix-tar/packages/tmux/tmux-$1-$2.tar.gz
   tar xvfz tmux-$1-$2.tar.gz
   rm tmux-$1-$2.tar.gz
 
   rm -f ~/.c9/bin/tmux
-  ln -s ~/.c9/local/bin/tmux ~/.c9/bin/tmux
+  ln -s ./local/bin/tmux ~/.c9/bin/tmux
 }
 
 nak(){

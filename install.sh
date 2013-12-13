@@ -136,7 +136,7 @@ tmux(){
   rm tmux-$1-$2.tar.gz
 
   rm -f ~/.c9/bin/tmux
-  ln -s ./local/bin/tmux ~/.c9/bin/tmux
+  ln -s ~/.c9/local/bin/tmux ~/.c9/bin/tmux
 }
 
 nak(){

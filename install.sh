@@ -140,7 +140,7 @@ tmux(){
 
 nak(){
   echo :Installing Nak
-  $NPM install https://github.com/c9/nak/tarball/ea1299a3688f307d2269c93bd9692101eb4f262e
+  $NPM install nak
 }
 
 ptyjs(){

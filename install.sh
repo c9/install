@@ -60,7 +60,8 @@ start() {
     "ls" )
       echo "!node - Node.js"
       echo "!tmux - TMUX"
-      echo "!nak - TMUX"
+      echo "!nak - NAK"
+      echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
       echo "coffee - Coffee Script"
       echo "less - Less"
@@ -101,7 +102,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux nak ptyjs
+      start install node tmux nak ptyjs vfsextend
     ;;
     
     * )
@@ -136,6 +137,13 @@ tmux(){
 
   rm -f ~/.c9/bin/tmux
   ln -s ~/.c9/local/bin/tmux ~/.c9/bin/tmux
+}
+
+vfsextend(){
+  echo :Installing VFS extend
+  curl -sSOL https://raw.github.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
+  tar xvfz c9-vfs-extend.tar.gz
+  rm c9-vfs-extend.tar.gz
 }
 
 nak(){

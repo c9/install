@@ -11,8 +11,8 @@ if has "curl"; then
 elif has "wget"; then
   DOWNLOAD="wget -nc"
 else
-  echo "You need curl or wget to proceed" >&2;
-exit 1
+  echo "Error: you need curl or wget to proceed" >&2;
+  exit 1
 fi
 
 C9_DIR=$HOME/.c9
@@ -24,6 +24,8 @@ start() {
     start base
     return
   fi
+
+  check_deps
   
   # Try to figure out the os and arch for binary fetching
   local uname="$(uname -a)"
@@ -117,6 +119,15 @@ start() {
       start base
     ;;
   esac
+}
+
+check_deps() {
+  for DEP in perl make gcc; do
+    if ! has $DEP; then
+      echo "Error: you need $DEP to proceed" >&2
+      exit 1
+    fi
+  done
 }
 
 # NodeJS

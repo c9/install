@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 has() {
   type "$1" > /dev/null 2>&1
@@ -26,6 +26,8 @@ start() {
   fi
 
   check_deps
+
+  set -x
   
   # Try to figure out the os and arch for binary fetching
   local uname="$(uname -a)"

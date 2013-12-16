@@ -193,7 +193,8 @@ tmux(){
     if ! has "brew"; then
       ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
     fi
-    brew install tmux > /dev/null
+    brew install tmux > /dev/null ||
+      (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
     ln -sf $(which tmux) ~/.c9/bin/tmux
 
   # Linux

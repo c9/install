@@ -26,8 +26,6 @@ start() {
   fi
 
   check_deps
-
-  set -x
   
   # Try to figure out the os and arch for binary fetching
   local uname="$(uname -a)"

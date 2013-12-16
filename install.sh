@@ -189,6 +189,16 @@ tmux(){
   mkdir -p "$C9_DIR/bin"
 
   # Max os x
+
+if has "tmux"; then
+  tmux_version=$(tmux -V | cut -d' ' -f2)
+  if [ $(echo "$tmux_version>=1.6" | bc) -eq 1 ]; then
+    ln -sf $(which tmux) ~/.c9/bin/tmux
+    return
+  fi
+  
+# If tmux is not present or at the wrong version, we will install it
+else
   if [ $os = "darwin" ]; then
     if ! has "brew"; then
       ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
@@ -206,6 +216,7 @@ tmux(){
     compile_tmux
     ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi
+fi
 }
 
 vfsextend(){

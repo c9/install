@@ -122,7 +122,7 @@ start() {
 }
 
 check_deps() {
-  for DEP in perl make gcc; do
+  for DEP in make gcc; do
     if ! has $DEP; then
       echo "Error: you need $DEP to proceed" >&2
       exit 1

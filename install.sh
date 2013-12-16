@@ -69,7 +69,7 @@ start() {
 
     "ls" )
       echo "!node - Node.js"
-      echo "!tmux - TMUX"
+      echo "!tmux_install - TMUX"
       echo "!nak - NAK"
       echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
@@ -114,7 +114,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux nak ptyjs vfsextend
+      start install node tmux_install nak ptyjs vfsextend
     ;;
     
     * )
@@ -184,11 +184,21 @@ compile_tmux(){
   make install
 }
 
-tmux(){
+tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
   # Max os x
+
+if has "tmux"; then
+  tmux_version=$(tmux -V | cut -d' ' -f2)
+  if [ $(echo "$tmux_version>=1.6" | bc) -eq 1 ]; then
+    ln -sf $(which tmux) ~/.c9/bin/tmux
+    return 0
+  fi
+  
+# If tmux is not present or at the wrong version, we will install it
+else
   if [ $os = "darwin" ]; then
     if ! has "brew"; then
       ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
@@ -206,6 +216,7 @@ tmux(){
     compile_tmux
     ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi
+fi
 }
 
 vfsextend(){

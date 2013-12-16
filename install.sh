@@ -102,7 +102,7 @@ start() {
       pushd $C9_DIR/node_modules/.bin
       for FILE in $C9_DIR/node_modules/.bin/* 
       do
-          perl -i -p -e 's/#!\/usr\/bin\/env node/#!'${NODE//\//\\\/}'/' $(readlink $FILE)
+        sed -i -E s:'#!/usr/bin/env node':"$NODE":g $(readlink $FILE)
       done
       popd
       

@@ -96,7 +96,7 @@ start() {
       # install packages
       while [ $# -ne 0 ]
       do
-        eval ${1} $os $arch
+        time eval ${1} $os $arch
         shift
       done
       

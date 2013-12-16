@@ -69,7 +69,7 @@ start() {
 
     "ls" )
       echo "!node - Node.js"
-      echo "!tmux - TMUX"
+      echo "!tmux_install - TMUX"
       echo "!nak - NAK"
       echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
@@ -114,7 +114,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux nak ptyjs vfsextend
+      start install node tmux_install nak ptyjs vfsextend
     ;;
     
     * )
@@ -184,7 +184,7 @@ compile_tmux(){
   make install
 }
 
-tmux(){
+tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
@@ -194,7 +194,7 @@ if has "tmux"; then
   tmux_version=$(tmux -V | cut -d' ' -f2)
   if [ $(echo "$tmux_version>=1.6" | bc) -eq 1 ]; then
     ln -sf $(which tmux) ~/.c9/bin/tmux
-    return
+    return 0
   fi
   
 # If tmux is not present or at the wrong version, we will install it

@@ -187,9 +187,9 @@ tmux(){
   else
     ln -sf $(which tmux) ~/.c9/bin/tmux
     echo "########## Downloading deps ###########"
-    $DOWNLOAD https://github.com/downloads/libevent/libevent/libevent-1.4.14b-stable.tar.gz
-    $DOWNLOAD http://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.9.tar.gz
-    $DOWNLOAD http://downloads.sourceforge.net/project/tmux/tmux/tmux-1.6/tmux-1.6.tar.gz
+    $DOWNLOAD https://raw.github.com/c9/install/install-tmux/packages/tmux/libevent-1.4.14b-stable.tar.gz
+    $DOWNLOAD https://raw.github.com/c9/install/install-tmux/packages/tmux/ncurses-5.9.tar.gz
+    $DOWNLOAD https://raw.github.com/c9/install/install-tmux/packages/tmux/tmux-1.6.tar.gz
     compile_tmux
     ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi

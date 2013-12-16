@@ -192,7 +192,7 @@ tmux_install(){
 
 if has "tmux"; then
   tmux_version=$(tmux -V | cut -d' ' -f2)
-  if [ $(echo "$tmux_version>=1.6" | bc) -eq 1 ]; then
+  if [ $(python -c "ok = 1 if $tmux_version>=1.6 else 0; print ok") -eq 1 ]; then
     ln -sf $(which tmux) ~/.c9/bin/tmux
     return 0
   fi

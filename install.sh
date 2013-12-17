@@ -152,33 +152,33 @@ compile_tmux(){
   tar xzvf libevent-1.4.14b-stable.tar.gz
   rm libevent-1.4.14b-stable.tar.gz
   cd libevent-1.4.14b-stable
-  echo "## Configuring Libevent"
+  echo ":Configuring Libevent"
   ./configure --prefix="$C9_DIR/local"
-  echo "## Compiling Libevent"
+  echo ":Compiling Libevent"
   make
-  echo "## Installing libevent"
+  echo ":Installing libevent"
   make install
  
   cd "$C9_DIR"
   tar xzvf ncurses-5.9.tar.gz
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
-  echo "## Configuring Ncurses"
+  echo ":Configuring Ncurses"
   ./configure --prefix="$C9_DIR/local"
-  echo "## Compiling Ncurses"
+  echo ":Compiling Ncurses"
   make
-  echo "## Installing Ncurses"
+  echo ":Installing Ncurses"
   make install
  
   cd "$C9_DIR"
   tar zxvf tmux-1.6.tar.gz
   rm tmux-1.6.tar.gz
   cd tmux-1.6
-  echo "## Configuring Tmux"
+  echo ":Configuring Tmux"
   ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" CPPFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" LIBEVENT_CFLAGS="-I$C9_DIR/local/include" LIBEVENT_LIBS="-static -L$C9_DIR/local/lib -levent" LIBS="-L$C9_DIR/local/lib/ncurses -lncurses" --prefix="$C9_DIR/local"
-  echo "## Compiling Tmux"
+  echo ":Compiling Tmux"
   make
-  echo "## Installing Tmux"
+  echo ":Installing Tmux"
   make install
 }
 
@@ -207,7 +207,7 @@ else
   # Linux
   else
     ln -sf $(which tmux) ~/.c9/bin/tmux
-    echo "########## Downloading deps ###########"
+    echo ":Downloading tmux source code"
     $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-1.4.14b-stable.tar.gz
     $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
     $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.6.tar.gz

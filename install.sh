@@ -230,12 +230,12 @@ vfsextend(){
 
 nak(){
   echo :Installing Nak
-  $NPM install nak
+  $NPM install nak@0.3.1
 }
 
 ptyjs(){
   echo :Installing pty.js
-  $NPM install pty.js
+  $NPM install pty.js@0.2.3
 }
 
 coffee(){

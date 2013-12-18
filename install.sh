@@ -15,6 +15,8 @@ else
   exit 1
 fi
 
+VERSION=1
+NODE_VERSION=v0.10.23
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -109,7 +111,7 @@ start() {
       done
       popd
       
-      echo 1 > $HOME/.c9/installed
+      echo $VERSION > $HOME/.c9/installed
       echo :Done.
     ;;
     
@@ -136,8 +138,6 @@ check_deps() {
 # NodeJS
 
 node(){
-  NODE_VERSION=v0.10.23
-  
   # clean up 
   rm -rf node 
   rm -rf node-$NODE_VERSION*

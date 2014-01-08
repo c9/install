@@ -210,7 +210,7 @@ else
 
   # Linux
   else
-    ln -sf $(which tmux) ~/.c9/bin/tmux
+#    ln -sf $(which tmux) ~/.c9/bin/tmux
     echo ":Downloading tmux source code"
     $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-1.4.14b-stable.tar.gz
     $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz

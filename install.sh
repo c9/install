@@ -185,20 +185,30 @@ compile_tmux(){
   make install
 }
 
+tmux_download(){
+  echo ":Downloading tmux source code"
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-1.4.14b-stable.tar.gz
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.6.tar.gz
+}
+
+check_tmux_version(){
+  tmux_version=$(tmux -V | cut -d' ' -f2)  
+  if [ $(python -c "ok = 1 if $tmux_version>=1.6 else 0; print ok") -eq 1 ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
-  # Max os x
-
-if has "tmux"; then
-  tmux_version=$(tmux -V | cut -d' ' -f2)
-  if [ $(python -c "ok = 1 if $tmux_version>=1.6 else 0; print ok") -eq 1 ]; then
-    echo ':A good version of tmux was found, creating a symlink'
-    ln -sf $(which tmux) ~/.c9/bin/tmux
-    return 0
-  fi
-  
+if has "tmux" && check_tmux_version; then
+  echo ':A good version of tmux was found, creating a symlink'
+  ln -sf $(which tmux) ~/.c9/bin/tmux
+  return 0
 # If tmux is not present or at the wrong version, we will install it
 else
   if [ $os = "darwin" ]; then
@@ -208,14 +218,9 @@ else
     brew install tmux > /dev/null ||
       (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
     ln -sf $(which tmux) ~/.c9/bin/tmux
-
   # Linux
   else
-#    ln -sf $(which tmux) ~/.c9/bin/tmux
-    echo ":Downloading tmux source code"
-    $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-1.4.14b-stable.tar.gz
-    $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
-    $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.6.tar.gz
+    tmux_download  
     compile_tmux
     ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi

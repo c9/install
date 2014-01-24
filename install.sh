@@ -88,10 +88,9 @@ start() {
       shift
     
       # make sure dirs are around
-      cd $HOME
-      mkdir -p .c9/bin
-      mkdir -p .c9/node_modules
-      cd .c9
+      mkdir -p $C9_DIR/bin
+      mkdir -p $C9_DIR/node_modules
+      cd $C9_DIR
     
       # install packages
       while [ $# -ne 0 ]
@@ -207,7 +206,7 @@ tmux_install(){
 
 if has "tmux" && check_tmux_version; then
   echo ':A good version of tmux was found, creating a symlink'
-  ln -sf $(which tmux) "$C9_DIR/bin/tmux"
+  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
   return 0
 # If tmux is not present or at the wrong version, we will install it
 else
@@ -217,7 +216,7 @@ else
     fi
     brew install tmux > /dev/null ||
       (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
-    ln -sf $(which tmux) "$C9_DIR/bin/tmux"
+    ln -sf $(which tmux) "$C9_DIR"/bin/tmux
   # Linux
   else
     tmux_download  

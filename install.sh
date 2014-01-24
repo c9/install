@@ -206,7 +206,7 @@ tmux_install(){
 
 if has "tmux" && check_tmux_version; then
   echo ':A good version of tmux was found, creating a symlink'
-  ln -sf $(which tmux) ~/.c9/bin/tmux
+  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
   return 0
 # If tmux is not present or at the wrong version, we will install it
 else
@@ -216,7 +216,7 @@ else
     fi
     brew install tmux > /dev/null ||
       (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
-    ln -sf $(which tmux) ~/.c9/bin/tmux
+    ln -sf $(which tmux) "$C9_DIR"/bin/tmux
   # Linux
   else
     tmux_download  

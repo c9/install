@@ -17,7 +17,7 @@ fi
 
 VERSION=1
 NODE_VERSION=v0.10.23
-C9_DIR=$HOME/.c9
+C9_DIR=$HOME/.c9tmux
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 

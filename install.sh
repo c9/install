@@ -88,10 +88,9 @@ start() {
       shift
     
       # make sure dirs are around
-      cd $HOME
-      mkdir -p .c9/bin
-      mkdir -p .c9/node_modules
-      cd .c9
+      mkdir -p $C9_DIR/bin
+      mkdir -p $C9_DIR/node_modules
+      cd $C9_DIR
     
       # install packages
       while [ $# -ne 0 ]

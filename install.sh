@@ -236,7 +236,7 @@ vfsextend(){
 
 collab(){
   echo :Installing Collab Dependencies
-  $NPM install sqlite@2.1.18
+  $NPM install sqlite3@2.1.18
   $NPM install sequelize@2.0.0-beta.0
   $DOWNLOAD https://raw.github.com/c9/install/master/packages/sqlite3/linux/sqlite3
   mv sqlite3 "$C9_DIR"/bin/sqlite3

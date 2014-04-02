@@ -73,6 +73,7 @@ start() {
       echo "!nak - NAK"
       echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
+      echo "!collab - collab"
       echo "coffee - Coffee Script"
       echo "less - Less"
       echo "sass - Sass"
@@ -116,7 +117,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux_install nak ptyjs vfsextend
+      start install node tmux_install nak ptyjs vfsextend collab
     ;;
     
     * )
@@ -231,6 +232,15 @@ vfsextend(){
   $DOWNLOAD https://raw.github.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
   tar xvfz c9-vfs-extend.tar.gz
   rm c9-vfs-extend.tar.gz
+}
+
+collab(){
+  echo :Installing Collab Dependencies
+  $NPM install sqlite@2.1.18
+  $NPM install sequelize@2.0.0-beta.0
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/sqlite3/linux/sqlite3
+  mv sqlite3 "$C9_DIR"/bin/sqlite3
+  chmod +x "$C9_DIR"/bin/sqlite3
 }
 
 nak(){

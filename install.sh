@@ -243,6 +243,7 @@ collab(){
   $DOWNLOAD https://raw.github.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
   tar xvfz sqlite3.tar.gz
   rm sqlite3.tar.gz
+  ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
 }
 
 nak(){

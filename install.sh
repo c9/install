@@ -248,7 +248,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  $NPM install nak@0.3.1
+  $NPM install nak@0.3.2
 }
 
 ptyjs(){

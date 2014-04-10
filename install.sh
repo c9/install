@@ -16,7 +16,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v0.10.25
+NODE_VERSION=v0.10.26
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -248,7 +248,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  $NPM install nak@0.3.1
+  $NPM install nak@0.3.2
 }
 
 ptyjs(){

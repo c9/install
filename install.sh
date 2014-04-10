@@ -5,6 +5,12 @@ has() {
   return $?
 }
 
+# Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
+exec > >(tee /tmp/installlog.txt)
+
+# Without this, only stdout would be captured - i.e. your
+# log file would not contain any error messages.
+exec 2>&1
 
 if has "curl"; then
   DOWNLOAD="curl -sSOL"
@@ -152,9 +158,10 @@ node(){
 
 compile_tmux(){
   cd "$C9_DIR"
-  tar xzvf libevent-1.4.14b-stable.tar.gz
-  rm libevent-1.4.14b-stable.tar.gz
-  cd libevent-1.4.14b-stable
+  echo "Compiling libevent..."
+  tar xzvf libevent-2.0.21-stable.tar.gz
+  rm libevent-2.0.21-stable.tar.gz
+  cd libevent-2.0.21-stable
   echo ":Configuring Libevent"
   ./configure --prefix="$C9_DIR/local"
   echo ":Compiling Libevent"
@@ -163,6 +170,7 @@ compile_tmux(){
   make install
  
   cd "$C9_DIR"
+  echo "Compiling ncurses..."
   tar xzvf ncurses-5.9.tar.gz
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
@@ -174,9 +182,10 @@ compile_tmux(){
   make install
  
   cd "$C9_DIR"
-  tar zxvf tmux-1.6.tar.gz
-  rm tmux-1.6.tar.gz
-  cd tmux-1.6
+  echo "Compiling tmux..."
+  tar zxvf tmux-1.8.tar.gz
+  rm tmux-1.8.tar.gz
+  cd tmux-1.8
   echo ":Configuring Tmux"
   ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" CPPFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" LIBEVENT_CFLAGS="-I$C9_DIR/local/include" LIBEVENT_LIBS="-static -L$C9_DIR/local/lib -levent" LIBS="-L$C9_DIR/local/lib/ncurses -lncurses" --prefix="$C9_DIR/local"
   echo ":Compiling Tmux"
@@ -187,9 +196,13 @@ compile_tmux(){
 
 tmux_download(){
   echo ":Downloading tmux source code"
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-1.4.14b-stable.tar.gz
+  
+  echo "Downloading Libevent..."
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  echo "Downloading Ncurses..."
   $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.6.tar.gz
+  echo "Downloading Tmux..."
+  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.8.tar.gz
 }
 
 check_tmux_version(){
@@ -225,6 +238,14 @@ else
     ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi
 fi
+
+HASTMUX=`"$C9_DIR/bin/tmux" new ls | wc -l`
+if [ $HASTMUX -ne 0 ]; then
+  echo "Unknown exception installing TMUX:"
+  echo `"$C9_DIR/bin/tmux" new ls`
+  exit 100
+fi
+
 }
 
 vfsextend(){
@@ -254,6 +275,13 @@ nak(){
 ptyjs(){
   echo :Installing pty.js
   $NPM install pty.js@0.2.3
+  
+  HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
+  if [ $HASPTY -ne 1 ]; then
+    echo "Unknown exception installing pty.js"
+    echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+    exit 100
+  fi
 }
 
 coffee(){

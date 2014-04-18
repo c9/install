@@ -102,6 +102,10 @@ start() {
       # install packages
       while [ $# -ne 0 ]
       do
+        if [ "$1" == "tmux" ]; then
+          echo "Error: please specify tmux_install instead of tmux"
+          exit 1
+        fi
         time eval ${1} $os $arch
         shift
       done
@@ -206,8 +210,8 @@ tmux_download(){
 }
 
 check_tmux_version(){
-  tmux_version=$(tmux -V | cut -d' ' -f2)  
-  if [ $(python -c "ok = 1 if $tmux_version>=1.6 else 0; print ok") -eq 1 ]; then
+  tmux_version=$($1 -V | cut -d' ' -f2)  
+  if [ $(python -c "ok = 1 if 1.6<=$tmux_version and $tmux_version<1.9  else 0; print ok") -eq 1 ]; then
     return 0
   else
     return 1
@@ -218,7 +222,9 @@ tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
-if has "tmux" && check_tmux_version; then
+if check_tmux_version bin/tmux; then
+  echo ':Existing tmux version is up-to-date'
+elif has "tmux" && check_tmux_version tmux; then
   echo ':A good version of tmux was found, creating a symlink'
   ln -sf $(which tmux) "$C9_DIR"/bin/tmux
   return 0
@@ -239,10 +245,12 @@ else
   fi
 fi
 
-HASTMUX=`"$C9_DIR/bin/tmux" new ls | wc -l`
-if [ $HASTMUX -ne 0 ]; then
-  echo "Unknown exception installing TMUX:"
+TMUXOUT=`"$C9_DIR/bin/tmux" new ls`
+if ! ([ "$TMUXOUT" == "" ] || [[ "$TMUXOUT" =~ exited ]]); then
+  echo "Installed tmux does not appear to work:"
+  echo "$ \"$C9_DIR/bin/tmux\" new ls"
   echo `"$C9_DIR/bin/tmux" new ls`
+  echo "Please check if tmux works correctly or if another version of tmux is still running"
   exit 100
 fi
 

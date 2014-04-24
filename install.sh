@@ -139,7 +139,10 @@ start() {
 check_deps() {
   for DEP in make gcc; do
     if ! has $DEP; then
-      echo "Error: you need $DEP to proceed" >&2
+      echo "Error: please install $DEP to proceed" >&2
+      if [[ `cat /proc/version 2>/dev/null` =~ Ubuntu|Debian ]]; then
+        echo "To do so, log into your machine and type 'sudo apt-get install build-essential'" >&2
+      fi
       exit 1
     fi
   done

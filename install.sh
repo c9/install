@@ -75,7 +75,7 @@ start() {
 
     "ls" )
       echo "!node - Node.js"
-      echo "!tmux_install - TMUX"
+      echo "!tmux - TMUX"
       echo "!nak - NAK"
       echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
@@ -103,8 +103,9 @@ start() {
       while [ $# -ne 0 ]
       do
         if [ "$1" == "tmux" ]; then
-          echo "Error: please specify tmux_install instead of tmux"
-          exit 1
+          time tmux_install $os $arch
+          shift
+          continue
         fi
         time eval ${1} $os $arch
         shift

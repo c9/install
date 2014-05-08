@@ -75,7 +75,7 @@ start() {
 
     "ls" )
       echo "!node - Node.js"
-      echo "!tmux_install - TMUX"
+      echo "!tmux - TMUX"
       echo "!nak - NAK"
       echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
@@ -103,8 +103,9 @@ start() {
       while [ $# -ne 0 ]
       do
         if [ "$1" == "tmux" ]; then
-          echo "Error: please specify tmux_install instead of tmux"
-          exit 1
+          time tmux_install $os $arch
+          shift
+          continue
         fi
         time eval ${1} $os $arch
         shift
@@ -227,10 +228,13 @@ tmux_install(){
 
 if check_tmux_version bin/tmux; then
   echo ':Existing tmux version is up-to-date'
-elif has "tmux" && check_tmux_version tmux; then
-  echo ':A good version of tmux was found, creating a symlink'
-  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
-  return 0
+
+# If we can support tmux 1.9 or detect upgrades, the following would work:
+#elif has "tmux" && check_tmux_version tmux; then
+#  echo ':A good version of tmux was found, creating a symlink'
+#  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+#  return 0
+
 # If tmux is not present or at the wrong version, we will install it
 else
   if [ $os = "darwin" ]; then

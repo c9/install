@@ -252,7 +252,10 @@ else
   fi
 fi
 
-TMUXOUT=`"$C9_DIR/bin/tmux" new ls`
+unset TMUX
+TMUXOUT=`"$C9_DIR/bin/tmux" new ls`|| \
+(echo tmux installation failed; exit 100)
+
 if ! ([ "$TMUXOUT" == "" ] || [[ "$TMUXOUT" =~ exited ]]); then
   echo "Installed tmux does not appear to work:"
   echo "$ \"$C9_DIR/bin/tmux\" new ls"

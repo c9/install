@@ -215,6 +215,10 @@ tmux_download(){
 
 check_tmux_version(){
   tmux_version=$($1 -V | cut -d' ' -f2)  
+  if [ ! "$tmux_version" ]; then
+    return 1
+  fi
+
   if [ $(python -c "ok = 1 if 1.6<=$tmux_version and $tmux_version<1.9  else 0; print ok") -eq 1 ]; then
     return 0
   else

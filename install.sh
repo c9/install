@@ -230,44 +230,36 @@ tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
-if check_tmux_version bin/tmux; then
-  echo ':Existing tmux version is up-to-date'
-
-# If we can support tmux 1.9 or detect upgrades, the following would work:
-#elif has "tmux" && check_tmux_version tmux; then
-#  echo ':A good version of tmux was found, creating a symlink'
-#  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
-#  return 0
-
-# If tmux is not present or at the wrong version, we will install it
-else
-  if [ $os = "darwin" ]; then
-    if ! has "brew"; then
-      ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
-    fi
-    brew install tmux > /dev/null ||
-      (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
-    ln -sf $(which tmux) "$C9_DIR"/bin/tmux
-  # Linux
+  if check_tmux_version bin/tmux; then
+    echo ':Existing tmux version is up-to-date'
+  
+  # If we can support tmux 1.9 or detect upgrades, the following would work:
+  #elif has "tmux" && check_tmux_version tmux; then
+  #  echo ':A good version of tmux was found, creating a symlink'
+  #  ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+  #  return 0
+  
+  # If tmux is not present or at the wrong version, we will install it
   else
-    tmux_download  
-    compile_tmux
-    ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
+    if [ $os = "darwin" ]; then
+      if ! has "brew"; then
+        ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
+      fi
+      brew install tmux > /dev/null ||
+        (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
+      ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+    # Linux
+    else
+      tmux_download  
+      compile_tmux
+      ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
+    fi
   fi
-fi
-
-unset TMUX
-TMUXOUT=`"$C9_DIR/bin/tmux" new ls`|| \
-(echo tmux installation failed; exit 100)
-
-if ! ([ "$TMUXOUT" == "" ] || [[ "$TMUXOUT" =~ exited ]]); then
-  echo "Installed tmux does not appear to work:"
-  echo "$ \"$C9_DIR/bin/tmux\" new ls"
-  echo `"$C9_DIR/bin/tmux" new ls`
-  echo "Please check if tmux works correctly or if another version of tmux is still running"
-  exit 100
-fi
-
+  
+  if ! check_tmux_version bin/tmux; then
+    echo "Installed tmux does not appear to work:"
+    exit 100
+  fi
 }
 
 vfsextend(){

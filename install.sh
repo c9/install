@@ -230,7 +230,7 @@ tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
 
-  if check_tmux_version bin/tmux; then
+  if check_tmux_version $C9_DIR/bin/tmux; then
     echo ':Existing tmux version is up-to-date'
   
   # If we can support tmux 1.9 or detect upgrades, the following would work:
@@ -256,7 +256,7 @@ tmux_install(){
     fi
   fi
   
-  if ! check_tmux_version bin/tmux; then
+  if ! check_tmux_version $C9_DIR/bin/tmux; then
     echo "Installed tmux does not appear to work:"
     exit 100
   fi

@@ -214,6 +214,9 @@ tmux_download(){
 }
 
 check_tmux_version(){
+  if [ ! -x $1 ]; then
+    return 1
+  fi
   tmux_version=$($1 -V | cut -d' ' -f2)  
   if [ ! "$tmux_version" ]; then
     return 1

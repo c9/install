@@ -291,6 +291,8 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
+  echo :Using $(python --version)
+  
   $NPM install pty.js@0.2.3
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`

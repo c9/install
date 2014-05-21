@@ -27,6 +27,9 @@ C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 
+TMP=$C9_DIR/tmp
+TMPDIR=$TMP
+
 start() {
   if [ $# -lt 1 ]; then
     start base
@@ -101,6 +104,7 @@ start() {
     
       # make sure dirs are around
       mkdir -p $C9_DIR/bin
+      mkdir -p $C9_DIR/tmp
       mkdir -p $C9_DIR/node_modules
       cd $C9_DIR
     

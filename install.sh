@@ -262,6 +262,11 @@ tmux_install(){
       ln -sf $(which tmux) "$C9_DIR"/bin/tmux
     # Linux
     else
+      if ! has "make"; then
+        echo ":Could not find make. Please install make and try again."
+        exit 100;
+      fi
+    
       tmux_download  
       compile_tmux
       ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux

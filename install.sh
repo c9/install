@@ -305,6 +305,12 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
+  
+  PYTHONVERSION=`python --version 2>&1`
+  if [[ $PYTHONVERSION != *2.7* ]]; then
+    echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again."
+    exit 100
+  fi
 
   $NPM install node-gyp
   PATH=$C9_DIR/node_modules/.bin:$PATH

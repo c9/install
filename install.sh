@@ -27,8 +27,8 @@ C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 
-TMP=$C9_DIR/tmp
-TMPDIR=$TMP
+export TMP=$C9_DIR/tmp
+export TMPDIR=$TMP
 
 start() {
   if [ $# -lt 1 ]; then

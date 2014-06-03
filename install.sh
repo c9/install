@@ -70,7 +70,7 @@ start() {
   fi
   
   if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
-  	echo "You have a global node-gyp installed. Please run 'sudo apt-get remove gyp'"
+  	echo "You have a global gyp installed. Please run 'sudo apt-get remove gyp'"
   	exit 100
   fi
   

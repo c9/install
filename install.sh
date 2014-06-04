@@ -13,7 +13,7 @@ exec > >(tee /tmp/installlog.txt)
 exec 2>&1
 
 if has "wget"; then
-  DOWNLOAD="wget -Nc"
+  DOWNLOAD="wget -nc"
 elif has "curl"; then
   DOWNLOAD="curl -sSOL"
 else

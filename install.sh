@@ -12,10 +12,10 @@ exec > >(tee /tmp/installlog.txt)
 # log file would not contain any error messages.
 exec 2>&1
 
-if has "curl"; then
+if has "wget"; then
+  DOWNLOAD="wget -Nc"
+elif has "curl"; then
   DOWNLOAD="curl -sSOL"
-elif has "wget"; then
-  DOWNLOAD="wget -nc"
 else
   echo "Error: you need curl or wget to proceed" >&2;
   exit 1
@@ -220,11 +220,11 @@ tmux_download(){
   echo ":Downloading tmux source code"
   
   echo "Downloading Libevent..."
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
   echo "Downloading Ncurses..."
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
   echo "Downloading Tmux..."
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/tmux/tmux-1.8.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.8.tar.gz
 }
 
 check_tmux_version(){
@@ -260,7 +260,7 @@ tmux_install(){
   else
     if [ $os = "darwin" ]; then
       if ! has "brew"; then
-        ruby -e "$($DOWNLOAD https://raw.github.com/mxcl/homebrew/go/install)"
+        ruby -e "$($DOWNLOAD https://raw.githubusercontent.com/mxcl/homebrew/go/install)"
       fi
       brew install tmux > /dev/null ||
         (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
@@ -286,7 +286,7 @@ tmux_install(){
 
 vfsextend(){
   echo :Installing VFS extend
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
   tar xvfz c9-vfs-extend.tar.gz
   rm c9-vfs-extend.tar.gz
 }
@@ -297,7 +297,7 @@ collab(){
   $NPM install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
-  $DOWNLOAD https://raw.github.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
   tar xvfz sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3

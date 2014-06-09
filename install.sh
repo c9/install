@@ -236,7 +236,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ $(python -c "ok = 1 if 1.6<=$tmux_version and $tmux_version<1.9  else 0; print ok") -eq 1 ]; then
+  if [ $(python -c "ok = 1 if 1.7<=$tmux_version and $tmux_version<1.9  else 0; print ok") -eq 1 ]; then
     return 0
   else
     return 1

@@ -205,9 +205,9 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo "Compiling tmux..."
-  tar zxvf tmux-1.8.tar.gz
-  rm tmux-1.8.tar.gz
-  cd tmux-1.8
+  tar zxvf tmux-1.9.tar.gz
+  rm tmux-1.9.tar.gz
+  cd tmux-1.9
   echo ":Configuring Tmux"
   ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" CPPFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" LIBEVENT_CFLAGS="-I$C9_DIR/local/include" LIBEVENT_LIBS="-static -L$C9_DIR/local/lib -levent" LIBS="-L$C9_DIR/local/lib/ncurses -lncurses" --prefix="$C9_DIR/local"
   echo ":Compiling Tmux"
@@ -224,7 +224,7 @@ tmux_download(){
   echo "Downloading Ncurses..."
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
   echo "Downloading Tmux..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.8.tar.gz
+  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
 }
 
 check_tmux_version(){

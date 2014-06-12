@@ -218,6 +218,7 @@ compile_tmux(){
 
 tmux_download(){
   echo ":Downloading tmux source code"
+  echo ":N.B: This will take a while. To speed this up install tmux 1.9 manually on your machine and restart this process."
   
   echo "Downloading Libevent..."
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz

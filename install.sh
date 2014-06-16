@@ -306,7 +306,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  $NPM install nak@0.3.2
+  $NPM install https://github.com/c9/nak/tarball/c9
 }
 
 ptyjs(){

@@ -237,7 +237,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ $(python -c "ok = 1 if 1.7<=$tmux_version and $tmux_version<1.9  else 0; print ok") -eq 1 ]; then
+  if [ $(python -c "ok = 1 if 1.7<=$tmux_version else 0; print ok") -eq 1 ]; then
     return 0
   else
     return 1
@@ -306,7 +306,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  $NPM install nak@0.3.2
+  $NPM install https://github.com/c9/nak/tarball/c9
 }
 
 ptyjs(){

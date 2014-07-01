@@ -197,7 +197,7 @@ compile_tmux(){
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
   echo ":Configuring Ncurses"
-  ./configure --prefix="$C9_DIR/local"
+  ./configure --prefix="$C9_DIR/local" --without-cxx
   echo ":Compiling Ncurses"
   make
   echo ":Installing Ncurses"

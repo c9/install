@@ -180,7 +180,7 @@ node(){
 
 compile_tmux(){
   cd "$C9_DIR"
-  echo "Compiling libevent..."
+  echo ":Compiling libevent..."
   tar xzvf libevent-2.0.21-stable.tar.gz
   rm libevent-2.0.21-stable.tar.gz
   cd libevent-2.0.21-stable
@@ -192,7 +192,7 @@ compile_tmux(){
   make install
  
   cd "$C9_DIR"
-  echo "Compiling ncurses..."
+  echo ":Compiling ncurses..."
   tar xzvf ncurses-5.9.tar.gz
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
@@ -204,7 +204,7 @@ compile_tmux(){
   make install
  
   cd "$C9_DIR"
-  echo "Compiling tmux..."
+  echo ":Compiling tmux..."
   tar zxvf tmux-1.9.tar.gz
   rm tmux-1.9.tar.gz
   cd tmux-1.9
@@ -220,11 +220,11 @@ tmux_download(){
   echo ":Downloading tmux source code"
   echo ":N.B: This will take a while. To speed this up install tmux 1.9 manually on your machine and restart this process."
   
-  echo "Downloading Libevent..."
+  echo ":Downloading Libevent..."
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
-  echo "Downloading Ncurses..."
+  echo ":Downloading Ncurses..."
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
-  echo "Downloading Tmux..."
+  echo ":Downloading Tmux..."
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
 }
 

@@ -22,7 +22,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v0.10.3
+NODE_VERSION=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -52,7 +52,6 @@ start() {
     *x86_64*) arch=x64 ;;
     *i*86*) arch=x86 ;;
     *armv6l*) arch=arm-pi ;;
-    *armv7l*) arch=arm-pi ;;
   esac
   
   if [ $os != "linux" ] && [ $os != "darwin" ]; then
@@ -60,7 +59,7 @@ start() {
     exit 1
   fi
   
-  if [ $arch != "x64" ] && [ $arch != "x86" ] && [ $arch != "arm-pi" ]; then
+  if [ $arch != "x64" ] && [ $arch != "x86" ]; then
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi

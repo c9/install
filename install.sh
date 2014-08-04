@@ -64,7 +64,7 @@ start() {
     exit 1
   fi
   
-  if [ `ls -la ~ | grep .npm$ | awk '{ print $3 }'` = "root" ] && [ `id -u` != 0 ]; then
+  if [ "$(ls -la ~ | grep .npm$ | awk '{ print $3 }')" = "root" ] && [ $(id -u) != 0 ]; then
     echo "~/.npm is owned by root. Please chown to your user and try again."
     exit 1
   fi

@@ -156,13 +156,22 @@ check_deps() {
     if ! has $DEP; then
       echo "Error: please install $DEP to proceed" >&2
       if [[ `cat /etc/issue 2>/dev/null` =~ CentOS ]]; then
-        echo "To do so, log into your machine and type 'yum groupinstall -y development && yum install glibc-static'" >&2
+        echo "To do so, log into your machine and type 'yum groupinstall -y development'" >&2
       elif [[ `cat /proc/version 2>/dev/null` =~ Ubuntu|Debian ]]; then
         echo "To do so, log into your machine and type 'sudo apt-get install build-essential'" >&2
       fi
       exit 1
     fi
   done
+  
+  #CentOS
+  if [[ `cat /etc/issue 2>/dev/null` =~ CentOS ]]; then
+    if yum list installed glibc-static >/dev/null 2>&1; then
+      echo "Error: please install glibc-static to proceed" >&2
+      echo "To do so, log into your machine and type 'yum install glibc-static'" >&2
+      exit 1
+    fi
+  fi
 }
 
 # NodeJS

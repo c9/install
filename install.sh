@@ -157,6 +157,8 @@ check_deps() {
       echo "Error: please install $DEP to proceed" >&2
       if [[ `cat /proc/version 2>/dev/null` =~ Ubuntu|Debian ]]; then
         echo "To do so, log into your machine and type 'sudo apt-get install build-essential'" >&2
+      else if [[ `cat /etc/issue 2>/dev/null` =~ CentOS ]]; then
+        echo "To do so, log into your machine and type 'yum groupinstall -y development'" >&2
       fi
       exit 1
     fi

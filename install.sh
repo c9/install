@@ -152,6 +152,8 @@ start() {
 }
 
 check_deps() {
+  local ERR
+  
   for DEP in make gcc; do
     if ! has $DEP; then
       echo "Error: please install $DEP to proceed" >&2
@@ -160,7 +162,7 @@ check_deps() {
       elif [[ `cat /proc/version 2>/dev/null` =~ Ubuntu|Debian ]]; then
         echo "To do so, log into your machine and type 'sudo apt-get install build-essential'" >&2
       fi
-      exit 1
+      ERR=1
     fi
   done
   
@@ -169,9 +171,11 @@ check_deps() {
     if yum list installed glibc-static >/dev/null 2>&1; then
       echo "Error: please install glibc-static to proceed" >&2
       echo "To do so, log into your machine and type 'yum install glibc-static'" >&2
-      exit 1
+      ERR=1
     fi
   fi
+  
+  if [ "$ERR" ]; then exit 1; fi
 }
 
 # NodeJS

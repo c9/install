@@ -168,7 +168,7 @@ check_deps() {
   
   # CentOS
   if [[ `cat /etc/issue 2>/dev/null` =~ CentOS ]]; then
-    if yum list installed glibc-static >/dev/null 2>&1; then
+    if ! yum list installed glibc-static >/dev/null 2>&1; then
       echo "Error: please install glibc-static to proceed" >&2
       echo "To do so, log into your machine and type 'yum install glibc-static'" >&2
       ERR=1

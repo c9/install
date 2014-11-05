@@ -164,9 +164,9 @@ check_deps() {
   for DEP in make gcc; do
     if ! has $DEP; then
       echo "Error: please install $DEP to proceed" >&2
-      if [ "$OS" -eq "CentOS" ]; then
+      if [ "$OS" == "CentOS" ]; then
         echo "To do so, log into your machine and type 'yum groupinstall -y development'" >&2
-      elif [ "$OS" -eq "DEBIAN" ]; then
+      elif [ "$OS" == "DEBIAN" ]; then
         echo "To do so, log into your machine and type 'sudo apt-get install build-essential'" >&2
       fi
       ERR=1
@@ -174,7 +174,7 @@ check_deps() {
   done
   
   # CentOS
-  if [ "$OS" -eq "CentOS" ]; then
+  if [ "$OS" == "CentOS" ]; then
     if ! yum list installed glibc-static >/dev/null 2>&1; then
       echo "Error: please install glibc-static to proceed" >&2
       echo "To do so, log into your machine and type 'yum install glibc-static'" >&2

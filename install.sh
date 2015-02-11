@@ -274,7 +274,7 @@ tmux_install(){
     echo ':Existing tmux version is up-to-date'
   
   # If we can support tmux 1.9 or detect upgrades, the following would work:
-  elif has "tmux" && check_tmux_version tmux; then
+  elif has "tmux" && check_tmux_version `which tmux`; then
     echo ':A good version of tmux was found, creating a symlink'
     ln -sf $(which tmux) "$C9_DIR"/bin/tmux
     return 0

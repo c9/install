@@ -60,7 +60,7 @@ start() {
     exit 1
   fi
   
-  if [ $arch != "x64" ] && [ $arch != "x86" ]; then
+  if [ $arch != "x64" ] && [ $arch != "x86" ] && [ $arch != "arm-pi" ]; then
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi

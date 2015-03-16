@@ -71,8 +71,9 @@ start() {
   fi
   
   if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
-  	echo "You have a global gyp installed. Please run 'sudo apt-get remove gyp'"
-  	exit 100
+    echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
+    virtualenv $C9_DIR/python
+    npm config set python $C9_DIR/python/bin/python2
   fi
   
   case $1 in
@@ -137,7 +138,7 @@ start() {
       done
       popd
       
-      echo $VERSION > $HOME/.c9/installed
+      echo $VERSION > $C9_DIR/installed
       echo :Done.
     ;;
     

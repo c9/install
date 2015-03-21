@@ -343,7 +343,7 @@ ptyjs(){
   fi
 
   $NPM install node-gyp
-  PATH=$C9_DIR/node_modules/.bin:$PATH
+  PATH=$(dirname $NODE):$C9_DIR/node_modules/.bin:$PATH
   $NPM install pty.js@0.2.6
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`

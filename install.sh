@@ -73,7 +73,7 @@ start() {
   if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
     echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
     virtualenv $C9_DIR/python
-    npm config set python $C9_DIR/python/bin/python2
+    $NPM config -g set python $C9_DIR/python/bin/python2
   fi
   
   case $1 in

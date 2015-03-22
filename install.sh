@@ -22,7 +22,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v0.10.28
+NODE_VERSION=v0.12.0
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -319,7 +319,7 @@ vfsextend(){
 collab(){
   echo :Installing Collab Dependencies
   $NPM cache clean
-  $NPM install sqlite3@2.1.18
+  $NPM install sqlite3@3.0.5
   $NPM install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
@@ -349,8 +349,8 @@ ptyjs(){
   fi
 
   $NPM install node-gyp
-  PATH=$C9_DIR/node_modules/.bin:$PATH
-  $NPM install pty.js@0.2.3
+  PATH=$(dirname $NODE):$C9_DIR/node_modules/.bin:$PATH
+  $NPM install pty.js@0.2.6
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
   if [ $HASPTY -ne 1 ]; then

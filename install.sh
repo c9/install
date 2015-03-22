@@ -72,8 +72,8 @@ start() {
   
   if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
     echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
-    virtualenv $C9_DIR/python
-    $NPM config -g set python $C9_DIR/python/bin/python2
+    virtualenv "$C9_DIR/python"
+    "$NPM" config -g set python "$C9_DIR/python/bin/python2"
   fi
   
   case $1 in
@@ -110,10 +110,10 @@ start() {
       shift
     
       # make sure dirs are around
-      mkdir -p $C9_DIR/bin
-      mkdir -p $C9_DIR/tmp
-      mkdir -p $C9_DIR/node_modules
-      cd $C9_DIR
+      mkdir -p "$C9_DIR"/bin
+      mkdir -p "$C9_DIR"/tmp
+      mkdir -p "$C9_DIR"/node_modules
+      cd "$C9_DIR"
     
       # install packages
       while [ $# -ne 0 ]
@@ -128,8 +128,8 @@ start() {
       done
       
       # finalize
-      pushd $C9_DIR/node_modules/.bin
-      for FILE in $C9_DIR/node_modules/.bin/*; do
+      pushd "$C9_DIR"/node_modules/.bin
+      for FILE in "$C9_DIR"/node_modules/.bin/*; do
         if [ `uname` == Darwin ]; then
           sed -i "" -E s:'#!/usr/bin/env node':"#!$NODE":g $(readlink $FILE)
         else
@@ -138,7 +138,7 @@ start() {
       done
       popd
       
-      echo $VERSION > $C9_DIR/installed
+      echo $VERSION > "$C9_DIR"/installed
       echo :Done.
     ;;
     
@@ -303,7 +303,7 @@ tmux_install(){
     fi
   fi
   
-  if ! check_tmux_version $C9_DIR/bin/tmux; then
+  if ! check_tmux_version "$C9_DIR"/bin/tmux; then
     echo "Installed tmux does not appear to work:"
     exit 100
   fi
@@ -318,9 +318,9 @@ vfsextend(){
 
 collab(){
   echo :Installing Collab Dependencies
-  $NPM cache clean
-  $NPM install sqlite3@3.0.5
-  $NPM install sequelize@2.0.0-beta.0
+  "$NPM" cache clean
+  "$NPM" install sqlite3@3.0.5
+  "$NPM" install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
@@ -331,7 +331,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  $NPM install https://github.com/c9/nak/tarball/c9
+  "$NPM" install https://github.com/c9/nak/tarball/c9
 }
 
 ptyjs(){
@@ -348,9 +348,9 @@ ptyjs(){
     exit 100
   fi
 
-  $NPM install node-gyp
-  PATH=$(dirname $NODE):$C9_DIR/node_modules/.bin:$PATH
-  $NPM install pty.js@0.2.6
+  "$NPM" install node-gyp
+  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+  "$NPM" install pty.js@0.2.6
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
   if [ $HASPTY -ne 1 ]; then
@@ -362,27 +362,27 @@ ptyjs(){
 
 coffee(){
   echo :Installing Coffee Script
-  $NPM install coffee
+  "$NPM" install coffee
 }
 
 less(){
   echo :Installing Less
-  $NPM install less
+  "$NPM" install less
 }
 
 sass(){
   echo :Installing Sass
-  $NPM install sass
+  "$NPM" install sass
 }
 
 typescript(){
   echo :Installing TypeScript
-  $NPM install typescript  
+  "$NPM" install typescript  
 }
 
 stylus(){
   echo :Installing Stylus
-  $NPM install stylus  
+  "$NPM" install stylus  
 }
 
 # go(){

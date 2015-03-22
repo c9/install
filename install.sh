@@ -68,7 +68,6 @@ start() {
   if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
     echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
     virtualenv "$C9_DIR/python"
-    "$NPM" config -g set python "$C9_DIR/python/bin/python2"
   fi
   
   case $1 in
@@ -187,14 +186,28 @@ check_deps() {
 node(){
   # clean up 
   rm -rf node 
+  rm -f SHASUMS256.txt.asc
   rm -rf node-$NODE_VERSION*
-  
+
   echo :Installing Node $NODE_VERSION
-  
+
+  gpg --list-keys 7937DFD2AB06298B2293C3187D33FF9D0246406D 2>&1 >/dev/null || gpg --keyserver pool.sks-keyservers.net --recv-keys 7937DFD2AB06298B2293C3187D33FF9D0246406D
+  gpg --list-keys 114F43EE0176B71C7BC219DD50A3051F888C628D 2>&1 >/dev/null || gpg --keyserver pool.sks-keyservers.net --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D
+  $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/SHASUMS256.txt.asc
   $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
+  gpg --verify SHASUMS256.txt.asc
+  grep " node-$NODE_VERSION-$1-$2.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - || exit 1
+
   tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
   rm node-$NODE_VERSION-$1-$2.tar.gz
+
+  # node-gyp uses sytem node or fails with command not found if
+  # we don't bump this node up in the path
+  PATH=$C9_DIR/node/bin/:$PATH
+
+  [[ -f "$C9_DIR/python/bin/python2" ]] && "$NPM" config -g set python "$C9_DIR/python/bin/python2"
+
 }
 
 compile_tmux(){

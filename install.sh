@@ -195,8 +195,7 @@ node(){
   gpg --list-keys 114F43EE0176B71C7BC219DD50A3051F888C628D 2>&1 >/dev/null || gpg --keyserver pool.sks-keyservers.net --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D
   $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/SHASUMS256.txt.asc
   $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
-  gpg --verify SHASUMS256.txt.asc
-  grep " node-$NODE_VERSION-$1-$2.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - || exit 1
+  gpg --verify SHASUMS256.txt.asc && grep " node-$NODE_VERSION-$1-$2.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - || exit 1
 
   tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node

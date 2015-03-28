@@ -191,7 +191,7 @@ node(){
   
   echo :Installing Node $NODE_VERSION
   
-  $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
+  $DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
   tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
   rm node-$NODE_VERSION-$1-$2.tar.gz

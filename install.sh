@@ -64,13 +64,7 @@ start() {
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi
-  
-  if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
-    echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
-    virtualenv "$C9_DIR/python"
-    "$NPM" config -g set python "$C9_DIR/python/bin/python2"
-  fi
-  
+    
   case $1 in
     "help" )
       echo
@@ -184,6 +178,37 @@ check_deps() {
 
 # NodeJS
 
+downlaod_virtualenv() {
+  VIRTUALENV_VERSION="virtualenv-12.0.7"
+  $DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz"
+  tar xvfz $VIRTUALENV_VERSION.tar.gz
+  rm $VIRTUALENV_VERSION.tar.gz
+  mv $VIRTUALENV_VERSION virtualenv
+}
+
+ensure_local_gyp() {
+  # when gyp is installed globally npm install pty.js won't work
+  # to test this use `sudo apt-get install gyp`
+  if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
+    echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
+    rm -rf virtualenv
+    rm -rf python
+    if has virtualenv; then
+      virtualenv "$C9_DIR/python"
+    else
+      downlaod_virtualenv
+      python virtualenv/virtualenv.py "$C9_DIR/python"
+    fi
+    if [[ -f "$C9_DIR/python/bin/python2" ]]; then
+      "$NPM" config -g set python "$C9_DIR/python/bin/python2"
+      export PYTHON="$C9_DIR/python/bin/python2"
+    else
+      echo "Unable to setup virtualenv"
+      exit 1
+    fi
+  fi
+}
+
 node(){
   # clean up 
   rm -rf node 
@@ -198,6 +223,11 @@ node(){
 
   # use local npm cache
   "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+  # node-gyp uses sytem node or fails with command not found if
+  # we don't bump this node up in the path
+  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+  ensure_local_gyp
+
 }
 
 compile_tmux(){
@@ -347,7 +377,6 @@ ptyjs(){
   fi
 
   "$NPM" install node-gyp
-  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
   "$NPM" install pty.js@0.2.6
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`

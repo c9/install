@@ -181,7 +181,7 @@ check_deps() {
 downlaod_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
   $DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz"
-  tar xvfz $VIRTUALENV_VERSION.tar.gz
+  tar xzf $VIRTUALENV_VERSION.tar.gz
   rm $VIRTUALENV_VERSION.tar.gz
   mv $VIRTUALENV_VERSION virtualenv
 }
@@ -217,7 +217,7 @@ node(){
   echo :Installing Node $NODE_VERSION
   
   $DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
-  tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
+  tar xzf node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
   rm node-$NODE_VERSION-$1-$2.tar.gz
 
@@ -233,7 +233,7 @@ node(){
 compile_tmux(){
   cd "$C9_DIR"
   echo ":Compiling libevent..."
-  tar xzvf libevent-2.0.21-stable.tar.gz
+  tar xzf libevent-2.0.21-stable.tar.gz
   rm libevent-2.0.21-stable.tar.gz
   cd libevent-2.0.21-stable
   echo ":Configuring Libevent"
@@ -245,7 +245,7 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling ncurses..."
-  tar xzvf ncurses-5.9.tar.gz
+  tar xzf ncurses-5.9.tar.gz
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
   echo ":Configuring Ncurses"
@@ -257,7 +257,7 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling tmux..."
-  tar zxvf tmux-1.9.tar.gz
+  tar xzf tmux-1.9.tar.gz
   rm tmux-1.9.tar.gz
   cd tmux-1.9
   echo ":Configuring Tmux"
@@ -340,7 +340,7 @@ tmux_install(){
 vfsextend(){
   echo :Installing VFS extend
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
-  tar xvfz c9-vfs-extend.tar.gz
+  tar xzf c9-vfs-extend.tar.gz
   rm c9-vfs-extend.tar.gz
 }
 
@@ -352,7 +352,7 @@ collab(){
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
-  tar xvfz sqlite3.tar.gz
+  tar xzf sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
 }

@@ -397,3 +397,6 @@ stylus(){
 # }
 
 start $@
+
+# cleanup tmp files
+rm -rf "$C9_DIR/tmp"

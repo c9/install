@@ -64,13 +64,7 @@ start() {
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi
-  
-  if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
-    echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
-    virtualenv "$C9_DIR/python"
-    "$NPM" config -g set python "$C9_DIR/python/bin/python2"
-  fi
-  
+    
   case $1 in
     "help" )
       echo
@@ -184,6 +178,37 @@ check_deps() {
 
 # NodeJS
 
+downlaod_virtualenv() {
+  VIRTUALENV_VERSION="virtualenv-12.0.7"
+  $DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz"
+  tar xzf $VIRTUALENV_VERSION.tar.gz
+  rm $VIRTUALENV_VERSION.tar.gz
+  mv $VIRTUALENV_VERSION virtualenv
+}
+
+ensure_local_gyp() {
+  # when gyp is installed globally npm install pty.js won't work
+  # to test this use `sudo apt-get install gyp`
+  if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
+    echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
+    rm -rf virtualenv
+    rm -rf python
+    if has virtualenv; then
+      virtualenv "$C9_DIR/python"
+    else
+      downlaod_virtualenv
+      python virtualenv/virtualenv.py "$C9_DIR/python"
+    fi
+    if [[ -f "$C9_DIR/python/bin/python2" ]]; then
+      "$NPM" config -g set python "$C9_DIR/python/bin/python2"
+      export PYTHON="$C9_DIR/python/bin/python2"
+    else
+      echo "Unable to setup virtualenv"
+      exit 1
+    fi
+  fi
+}
+
 node(){
   # clean up 
   rm -rf node 
@@ -191,16 +216,24 @@ node(){
   
   echo :Installing Node $NODE_VERSION
   
-  $DOWNLOAD http://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
-  tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
+  $DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
+  tar xzf node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
   rm node-$NODE_VERSION-$1-$2.tar.gz
+
+  # use local npm cache
+  "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
+  # node-gyp uses sytem node or fails with command not found if
+  # we don't bump this node up in the path
+  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
+  ensure_local_gyp
+
 }
 
 compile_tmux(){
   cd "$C9_DIR"
   echo ":Compiling libevent..."
-  tar xzvf libevent-2.0.21-stable.tar.gz
+  tar xzf libevent-2.0.21-stable.tar.gz
   rm libevent-2.0.21-stable.tar.gz
   cd libevent-2.0.21-stable
   echo ":Configuring Libevent"
@@ -212,7 +245,7 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling ncurses..."
-  tar xzvf ncurses-5.9.tar.gz
+  tar xzf ncurses-5.9.tar.gz
   rm ncurses-5.9.tar.gz
   cd ncurses-5.9
   echo ":Configuring Ncurses"
@@ -224,7 +257,7 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling tmux..."
-  tar zxvf tmux-1.9.tar.gz
+  tar xzf tmux-1.9.tar.gz
   rm tmux-1.9.tar.gz
   cd tmux-1.9
   echo ":Configuring Tmux"
@@ -307,7 +340,7 @@ tmux_install(){
 vfsextend(){
   echo :Installing VFS extend
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
-  tar xvfz c9-vfs-extend.tar.gz
+  tar xzf c9-vfs-extend.tar.gz
   rm c9-vfs-extend.tar.gz
 }
 
@@ -319,7 +352,7 @@ collab(){
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
   $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
-  tar xvfz sqlite3.tar.gz
+  tar xzf sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
 }
@@ -344,7 +377,6 @@ ptyjs(){
   fi
 
   "$NPM" install node-gyp
-  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
   "$NPM" install pty.js@0.2.6
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
@@ -397,3 +429,6 @@ stylus(){
 # }
 
 start $@
+
+# cleanup tmp files
+rm -rf "$C9_DIR/tmp"

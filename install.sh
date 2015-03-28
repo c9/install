@@ -195,6 +195,9 @@ node(){
   tar xvfz node-$NODE_VERSION-$1-$2.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
   rm node-$NODE_VERSION-$1-$2.tar.gz
+
+  # use local npm cache
+  "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
 }
 
 compile_tmux(){

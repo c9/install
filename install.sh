@@ -219,13 +219,13 @@ ensure_local_gyp() {
       "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
     fi
     if [[ -f "$C9_DIR/python/bin/python2" ]]; then
-      "$NPM" config -g set python "$C9_DIR/python/bin/python2"
-      export PYTHON="$C9_DIR/python/bin/python2"
+      PYTHON="$C9_DIR/python/bin/python2"
     else
       echo "Unable to setup virtualenv"
       exit 1
     fi
   fi
+  "$NPM" config -g set python "$PYTHON"
 }
 
 node(){

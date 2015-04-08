@@ -30,6 +30,8 @@ NODE=$C9_DIR/node/bin/node
 export TMP=$C9_DIR/tmp
 export TMPDIR=$TMP
 
+PYTHON=python
+
 start() {
   if [ $# -lt 1 ]; then
     start base
@@ -173,7 +175,24 @@ check_deps() {
     fi
   fi
   
+  check_python
+  
   if [ "$ERR" ]; then exit 1; fi
+}
+
+check_python() {
+  if which python2.7 &> /dev/null; then
+    PYTHONVERSION="2.7"
+    PYTHON="python2.7"
+  else
+    PYTHONVERSION=`python --version 2>&1`
+    PYTHON=python
+  fi
+  
+  if [[ $PYTHONVERSION != *2.7* ]]; then
+    echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again. You can find more information on how to install Python in the docs: https://docs.c9.io/ssh_workspaces.html"
+    exit 100
+  fi
 }
 
 # NodeJS
@@ -189,7 +208,7 @@ downlaod_virtualenv() {
 ensure_local_gyp() {
   # when gyp is installed globally npm install pty.js won't work
   # to test this use `sudo apt-get install gyp`
-  if [ `python -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
+  if [ `"$PYTHON" -c 'import gyp; print gyp.__file__' 2> /dev/null` ]; then
     echo "You have a global gyp installed. Setting up VirtualEnv without global pakages"
     rm -rf virtualenv
     rm -rf python
@@ -197,16 +216,16 @@ ensure_local_gyp() {
       virtualenv "$C9_DIR/python"
     else
       downlaod_virtualenv
-      python virtualenv/virtualenv.py "$C9_DIR/python"
+      "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
     fi
     if [[ -f "$C9_DIR/python/bin/python2" ]]; then
-      "$NPM" config -g set python "$C9_DIR/python/bin/python2"
-      export PYTHON="$C9_DIR/python/bin/python2"
+      PYTHON="$C9_DIR/python/bin/python2"
     else
       echo "Unable to setup virtualenv"
       exit 1
     fi
   fi
+  "$NPM" config -g set python "$PYTHON"
 }
 
 node(){
@@ -289,7 +308,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ $(python -c "ok = 1 if 1.7<=$tmux_version else 0; print ok") -eq 1 ]; then
+  if [ $("$PYTHON" -c "print 1.7<=$tmux_version") == "True" ]; then
     return 0
   else
     return 1
@@ -364,18 +383,6 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
-  
-  if which python2.7 &> /dev/null; then
-    PYTHONVERSION="2.7"
-  else
-    PYTHONVERSION=`python --version 2>&1`
-  fi
-  
-  if [[ $PYTHONVERSION != *2.7* ]]; then
-    echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again. You can find more information on how to install Python in the docs: https://docs.c9.io/ssh_workspaces.html"
-    exit 100
-  fi
-
   "$NPM" install node-gyp
   "$NPM" install pty.js@0.2.6
   

@@ -49,6 +49,8 @@ start() {
     Darwin\ *) os=darwin ;;
     SunOS\ *) os=sunos ;;
     FreeBSD\ *) os=freebsd ;;
+    CYGWIN*) os=windows ;;
+    MINGW*) os=windows ;;
   esac
   case "$uname" in
     *x86_64*) arch=x64 ;;
@@ -57,12 +59,12 @@ start() {
     *armv7l*) arch=arm-pi ;;
   esac
   
-  if [ $os != "linux" ] && [ $os != "darwin" ]; then
+  if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
     exit 1
   fi
   
-  if [ $arch != "x64" ] && [ $arch != "x86" ] && [ $arch != "arm-pi" ]; then
+  if [ "$arch" != "x64" ] && [ "$arch" != "x86" ] && [ "$arch" != "arm-pi" ]; then
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi

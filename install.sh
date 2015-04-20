@@ -213,7 +213,7 @@ ensure_local_gyp() {
     rm -rf virtualenv
     rm -rf python
     if has virtualenv; then
-      virtualenv "$C9_DIR/python"
+      virtualenv -p python2 "$C9_DIR/python"
     else
       downlaod_virtualenv
       "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"

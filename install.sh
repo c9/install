@@ -23,6 +23,7 @@ fi
 
 VERSION=1
 NODE_VERSION=v0.12.0
+NODE_VERSION_ARM_PI=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -58,6 +59,10 @@ start() {
     *armv6l*) arch=arm-pi ;;
     *armv7l*) arch=arm-pi ;;
   esac
+  
+  if [ "$arch" == "arm-pi" ]; then
+    NODE_VERSION=$NODE_VERSION_ARM_PI
+  fi
   
   if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2

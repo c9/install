@@ -23,6 +23,7 @@ fi
 
 VERSION=1
 NODE_VERSION=v0.12.0
+NODE_VERSION_ARM_PI=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -49,6 +50,8 @@ start() {
     Darwin\ *) os=darwin ;;
     SunOS\ *) os=sunos ;;
     FreeBSD\ *) os=freebsd ;;
+    CYGWIN*) os=windows ;;
+    MINGW*) os=windows ;;
   esac
   case "$uname" in
     *x86_64*) arch=x64 ;;
@@ -57,12 +60,16 @@ start() {
     *armv7l*) arch=arm-pi ;;
   esac
   
-  if [ $os != "linux" ] && [ $os != "darwin" ]; then
+  if [ "$arch" == "arm-pi" ]; then
+    NODE_VERSION=$NODE_VERSION_ARM_PI
+  fi
+  
+  if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
     exit 1
   fi
   
-  if [ $arch != "x64" ] && [ $arch != "x86" ] && [ $arch != "arm-pi" ]; then
+  if [ "$arch" != "x64" ] && [ "$arch" != "x86" ] && [ "$arch" != "arm-pi" ]; then
     echo "Unsupported Architecture: $os $arch" 1>&2
     exit 1
   fi

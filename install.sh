@@ -391,7 +391,7 @@ nak(){
 ptyjs(){
   echo :Installing pty.js
   "$NPM" install node-gyp
-  "$NPM" install pty.js@0.2.6
+  "$NPM" install pty.js@0.2.7-1
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
   if [ $HASPTY -ne 1 ]; then

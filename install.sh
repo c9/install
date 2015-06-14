@@ -188,15 +188,15 @@ check_deps() {
 }
 
 check_python() {
-  if which python2.7 &> /dev/null; then
+  if type -P python2.7 &> /dev/null; then
     PYTHONVERSION="2.7"
     PYTHON="python2.7"
-  else
-    PYTHONVERSION=`python --version 2>&1`
-    PYTHON=python
+  elif type -P python &> /dev/null; then
+    PYTHONVERSION=`python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'`
+    PYTHON="python"
   fi
-  
-  if [[ $PYTHONVERSION != *2.7* ]]; then
+
+  if [[ $PYTHONVERSION != "2.7" ]]; then
     echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again. You can find more information on how to install Python in the docs: https://docs.c9.io/ssh_workspaces.html"
     exit 100
   fi

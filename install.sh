@@ -22,7 +22,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v0.12.0
+NODE_VERSION=v0.12.6
 NODE_VERSION_ARM_PI=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
@@ -32,6 +32,10 @@ export TMP=$C9_DIR/tmp
 export TMPDIR=$TMP
 
 PYTHON=python
+
+# node-gyp uses sytem node or fails with command not found if
+# we don't bump this node up in the path
+PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
 
 start() {
   if [ $# -lt 1 ]; then
@@ -142,7 +146,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux_install nak ptyjs vfsextend collab
+      start install node tmux_install nak ptyjs collab
     ;;
     
     * )
@@ -249,9 +253,6 @@ node(){
 
   # use local npm cache
   "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
-  # node-gyp uses sytem node or fails with command not found if
-  # we don't bump this node up in the path
-  PATH="$C9_DIR/node/bin/:$C9_DIR/node_modules/.bin:$PATH"
   ensure_local_gyp
 
 }
@@ -390,8 +391,7 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
-  "$NPM" install node-gyp
-  "$NPM" install pty.js@0.2.7-1
+  "$NPM" install pty.js@0.2.8
   
   HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
   if [ $HASPTY -ne 1 ]; then

@@ -176,6 +176,16 @@ check_deps() {
       ERR=1
     fi
   done
+
+  # lsof
+  if ! has "lsof"; then
+      echo "Error: please install lsof to proceed" >&2
+      if [ "$OS" == "CentOS" ]; then
+        echo "To do so, log into your machine and type 'yum install -y lsof'" >&2
+      elif [ "$OS" == "DEBIAN" ]; then
+        echo "To do so, log into your machine and type 'sudo apt-get install lsof'" >&2
+      fi
+  fi
   
   # CentOS
   if [ "$OS" == "CentOS" ]; then

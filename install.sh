@@ -159,7 +159,7 @@ check_deps() {
   local ERR
   local OS
   
-  if [[ `cat /etc/issue 2>/dev/null` =~ CentOS ]]; then
+  if [[ `cat /etc/os-release 2>/dev/null` =~ CentOS ]]; then
     OS="CentOS"
   elif [[ `cat /proc/version 2>/dev/null` =~ Ubuntu|Debian ]]; then
     OS="DEBIAN"

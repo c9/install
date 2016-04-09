@@ -237,6 +237,7 @@ ensure_local_gyp() {
     fi
   fi
   "$NPM" config -g set python "$PYTHON"
+  "$NPM" config -g set unsafe-perm true
 }
 
 node(){

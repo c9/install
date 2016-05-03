@@ -46,23 +46,27 @@ start() {
   check_deps
   
   # Try to figure out the os and arch for binary fetching
-  local uname="$(uname -a)"
+  local uname="$(uname -s)"
   local os=
   local arch="$(uname -m)"
   case "$uname" in
-    Linux\ *) os=linux ;;
-    Darwin\ *) os=darwin ;;
-    SunOS\ *) os=sunos ;;
-    FreeBSD\ *) os=freebsd ;;
+    Linux*) os=linux ;;
+    Darwin*) os=darwin ;;
+    SunOS*) os=sunos ;;
+    FreeBSD*) os=freebsd ;;
     CYGWIN*) os=windows ;;
     MINGW*) os=windows ;;
   esac
-  case "$uname" in
-    *x86_64*) arch=x64 ;;
-    *i*86*) arch=x86 ;;
+  case "$arch" in
     *armv6l*) arch=arm-pi ;;
     *armv7l*) arch=arm-pi ;;
+    *x86_64*) arch=x64 ;;
+    *i*86*) arch=x86 ;;
   esac
+  
+  if [ "$arch" == "x64" ] && [[ $HOSTTYPE == i*86 ]]; then
+    arch=x86 # check if 32 bit bash is installed on 64 bit kernel
+  fi
   
   if [ "$arch" == "arm-pi" ]; then
     NODE_VERSION=$NODE_VERSION_ARM_PI
@@ -238,6 +242,11 @@ ensure_local_gyp() {
   fi
   "$NPM" config -g set python "$PYTHON"
   "$NPM" config -g set unsafe-perm true
+  
+  local GYP_PATH=$C9_DIR/node/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js
+  if [ -f  "$GYP_PATH" ]; then
+    ln -s "$GYP_PATH" "$C9_DIR"/node/bin/node-gyp &> /dev/null || :
+  fi
 }
 
 node(){

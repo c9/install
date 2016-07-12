@@ -6,7 +6,7 @@ has() {
 }
 
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
-exec > >(tee /tmp/installlog.txt)
+# exec > >(tee /tmp/installlog.txt)
 
 # Without this, only stdout would be captured - i.e. your
 # log file would not contain any error messages.
@@ -22,7 +22,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v0.12.6
+NODE_VERSION=v4.4.6
 NODE_VERSION_ARM_PI=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
@@ -58,18 +58,18 @@ start() {
     MINGW*) os=windows ;;
   esac
   case "$arch" in
-    *armv6l*) arch=arm-pi ;;
-    *armv7l*) arch=arm-pi ;;
+    *armv6l*) arch=armv6l ;;
+    *armv7l*) arch=armv7l ;;
     *x86_64*) arch=x64 ;;
     *i*86*) arch=x86 ;;
+    *)
+      echo "Unsupported Architecture: $os $arch" 1>&2
+      exit 1
+    ;;
   esac
   
   if [ "$arch" == "x64" ] && [[ $HOSTTYPE == i*86 ]]; then
     arch=x86 # check if 32 bit bash is installed on 64 bit kernel
-  fi
-  
-  if [ "$arch" == "arm-pi" ]; then
-    NODE_VERSION=$NODE_VERSION_ARM_PI
   fi
   
   if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
@@ -77,11 +77,6 @@ start() {
     exit 1
   fi
   
-  if [ "$arch" != "x64" ] && [ "$arch" != "x86" ] && [ "$arch" != "arm-pi" ]; then
-    echo "Unsupported Architecture: $os $arch" 1>&2
-    exit 1
-  fi
-    
   case $1 in
     "help" )
       echo
@@ -98,7 +93,6 @@ start() {
       echo "!node - Node.js"
       echo "!tmux - TMUX"
       echo "!nak - NAK"
-      echo "!vfsextend - VFS extend"
       echo "!ptyjs - pty.js"
       echo "!collab - collab"
       echo "coffee - Coffee Script"
@@ -336,7 +330,6 @@ check_tmux_version(){
 tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
-
   if check_tmux_version $C9_DIR/bin/tmux; then
     echo ':Existing tmux version is up-to-date'
   
@@ -374,17 +367,10 @@ tmux_install(){
   fi
 }
 
-vfsextend(){
-  echo :Installing VFS extend
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/extend/c9-vfs-extend.tar.gz
-  tar xzf c9-vfs-extend.tar.gz
-  rm c9-vfs-extend.tar.gz
-}
-
 collab(){
   echo :Installing Collab Dependencies
   "$NPM" cache clean
-  "$NPM" install sqlite3@3.0.5
+  "$NPM" install sqlite3@3.1.4
   "$NPM" install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
@@ -401,13 +387,37 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
+  
+  if [ "$arch" == "x64" ] && [ "$os" == "linux" ] ; then
+    $DOWNLOAD https://github.com/c9/install/releases/download/bin/pty-$NODE_VERSION-$os-$arch.tar.gz \
+      && rm -rf pty.js node_modules/pty.js \
+      && tar -U -zxf pty-$NODE_VERSION-$os-$arch.tar.gz \
+      && mv pty.js node_modules \
+      && rm -f pty-$NODE_VERSION-$os-$arch.tar.gz \
+      || :
+    if hasPty; then
+      return 0
+    fi
+    rm -rf pty.js node_modules/pty.js
+  fi
+  echo :prcompiled pty.js not found building from source
+  buildPty
+}
+
+buildPty() {
   "$NPM" install pty.js@0.3.0
   
-  HASPTY=`"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))" | grep createTerminal | wc -l`
-  if [ $HASPTY -ne 1 ]; then
+  if ! hasPty; then
     echo "Unknown exception installing pty.js"
     echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
     exit 100
+  fi
+}
+
+hasPty() {
+  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('pty.js').createTerminal=='function'" 2> /dev/null ` 
+  if [ "$HASPTY" != true ]; then
+    return 1
   fi
 }
 

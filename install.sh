@@ -13,9 +13,13 @@ has() {
 exec 2>&1
 
 if has "wget"; then
-  DOWNLOAD="wget --no-check-certificate -nc"
+  DOWNLOAD() {
+    wget --no-check-certificate -nc -O "$2" "$1"
+  }
 elif has "curl"; then
-  DOWNLOAD="curl -sSOL"
+  DOWNLOAD() {
+    curl -sSL -o "$2" "$1"
+  }
 else
   echo "Error: you need curl or wget to proceed" >&2;
   exit 1
@@ -208,7 +212,7 @@ check_python() {
 
 downlaod_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
-  $DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz"
+  DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
   tar xzf $VIRTUALENV_VERSION.tar.gz
   rm $VIRTUALENV_VERSION.tar.gz
   mv $VIRTUALENV_VERSION virtualenv
@@ -246,14 +250,14 @@ ensure_local_gyp() {
 node(){
   # clean up 
   rm -rf node 
-  rm -rf node-$NODE_VERSION*
+  rm -rf node.tar.gz
   
   echo :Installing Node $NODE_VERSION
   
-  $DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
-  tar xzf node-$NODE_VERSION-$1-$2.tar.gz
+  DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz node.tar.gz
+  tar xzf node.tar.gz
   mv node-$NODE_VERSION-$1-$2 node
-  rm node-$NODE_VERSION-$1-$2.tar.gz
+  rm -f node.tar.gz
 
   # use local npm cache
   "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
@@ -304,11 +308,11 @@ tmux_download(){
   echo ":N.B: This will take a while. To speed this up install tmux 1.9 manually on your machine and restart this process."
   
   echo ":Downloading Libevent..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz libevent-2.0.21-stable.tar.gz
   echo ":Downloading Ncurses..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
+  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz ncurses-5.9.tar.gz
   echo ":Downloading Tmux..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
+  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz tmux-1.9.tar.gz
 }
 
 check_tmux_version(){
@@ -343,7 +347,9 @@ tmux_install(){
   else
     if [ $os = "darwin" ]; then
       if ! has "brew"; then
-        ruby -e "$($DOWNLOAD https://raw.githubusercontent.com/mxcl/homebrew/go/install)"
+        # http://brew.sh/
+        DOWNLOAD https://raw.githubusercontent.com/Homebrew/install/master/install installbrew
+        ruby installbrew
       fi
       brew install tmux > /dev/null ||
         (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
@@ -374,7 +380,7 @@ collab(){
   "$NPM" install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
+  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz sqlite3.tar.gz
   tar xzf sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
@@ -389,11 +395,11 @@ ptyjs(){
   echo :Installing pty.js
   
   if [ "$arch" == "x64" ] && [ "$os" == "linux" ] ; then
-    $DOWNLOAD https://github.com/c9/install/releases/download/bin/pty-$NODE_VERSION-$os-$arch.tar.gz \
-      && rm -rf pty.js node_modules/pty.js \
-      && tar -U -zxf pty-$NODE_VERSION-$os-$arch.tar.gz \
+    rm -rf pty.js node_modules/pty.js pty.js.tar.gz \
+      && DOWNLOAD https://github.com/c9/install/releases/download/bin/pty-$NODE_VERSION-$os-$arch.tar.gz pty.js.tar.gz \
+      && tar -U -zxf pty.js.tar.gz \
       && mv pty.js node_modules \
-      && rm -f pty-$NODE_VERSION-$os-$arch.tar.gz \
+      && rm -f pty.js.tar.gz \
       || :
     if hasPty; then
       return 0
@@ -415,7 +421,7 @@ buildPty() {
 }
 
 hasPty() {
-  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('pty.js').createTerminal=='function'" 2> /dev/null ` 
+  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('pty.js').createTerminal=='function'"`
   if [ "$HASPTY" != true ]; then
     return 1
   fi

@@ -22,7 +22,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v4.4.6
+NODE_VERSION=v6.3.1
 NODE_VERSION_ARM_PI=v0.10.28
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
@@ -264,9 +264,9 @@ node(){
 compile_tmux(){
   cd "$C9_DIR"
   echo ":Compiling libevent..."
-  tar xzf libevent-2.0.21-stable.tar.gz
-  rm libevent-2.0.21-stable.tar.gz
-  cd libevent-2.0.21-stable
+  tar xzf libevent-2.0.22-stable.tar.gz
+  rm libevent-2.0.22-stable.tar.gz
+  cd libevent-2.0.22-stable
   echo ":Configuring Libevent"
   ./configure --prefix="$C9_DIR/local"
   echo ":Compiling Libevent"
@@ -276,9 +276,9 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling ncurses..."
-  tar xzf ncurses-5.9.tar.gz
-  rm ncurses-5.9.tar.gz
-  cd ncurses-5.9
+  tar xzf ncurses-6.0.tar.gz
+  rm ncurses-6.0.tar.gz
+  cd ncurses-6.0
   echo ":Configuring Ncurses"
   CPPFLAGS=-P ./configure --prefix="$C9_DIR/local" --without-tests --without-cxx
   echo ":Compiling Ncurses"
@@ -288,11 +288,11 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling tmux..."
-  tar xzf tmux-1.9.tar.gz
-  rm tmux-1.9.tar.gz
-  cd tmux-1.9
+  tar xzf tmux-2.2.tar.gz
+  rm tmux-2.2.tar.gz
+  cd tmux-2.2
   echo ":Configuring Tmux"
-  ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" CPPFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" LIBEVENT_CFLAGS="-I$C9_DIR/local/include" LIBEVENT_LIBS="-static -L$C9_DIR/local/lib -levent" LIBS="-L$C9_DIR/local/lib/ncurses -lncurses" --prefix="$C9_DIR/local"
+  ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" --prefix="$C9_DIR/local"
   echo ":Compiling Tmux"
   make
   echo ":Installing Tmux"
@@ -301,14 +301,17 @@ compile_tmux(){
 
 tmux_download(){
   echo ":Downloading tmux source code"
-  echo ":N.B: This will take a while. To speed this up install tmux 1.9 manually on your machine and restart this process."
+  echo ":N.B: This will take a while. To speed this up install tmux 2.2 manually on your machine and restart this process."
   
   echo ":Downloading Libevent..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  $DOWNLOAD https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
   echo ":Downloading Ncurses..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
+  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
+  $DOWNLOAD http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz
   echo ":Downloading Tmux..."
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
+  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
+  $DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz
 }
 
 check_tmux_version(){

@@ -21,10 +21,24 @@ else
   exit 1
 fi
 
+IS_HOSTED=false
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h | --hosted ) IS_HOSTED=true;
+  esac
+  shift
+done
+
 VERSION=1
 NODE_VERSION=v6.3.1
 NODE_VERSION_ARM_PI=v0.10.28
-C9_DIR=$HOME/.c9
+
+if [ "$IS_HOSTED" = true ]; then
+  C9_DIR=/opt/c9
+else
+  C9_DIR=$HOME/.c9
+fi
+
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 
@@ -67,16 +81,16 @@ start() {
       exit 1
     ;;
   esac
-  
+
   if [ "$arch" == "x64" ] && [[ $HOSTTYPE == i*86 ]]; then
     arch=x86 # check if 32 bit bash is installed on 64 bit kernel
   fi
-  
+
   if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
     exit 1
   fi
-  
+
   case $1 in
     "help" )
       echo

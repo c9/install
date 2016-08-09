@@ -24,7 +24,7 @@ fi
 C9_DIR=$HOME/.c9
 while [ $# -gt 0 ]; do
   case "$1" in
-    -d | --dest-dir ) C9_DIR="$2"; shift 2;;
+    -d | --dest-dir ) C9_DIR="$2"; shift;;
   esac
   shift
 done

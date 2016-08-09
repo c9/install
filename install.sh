@@ -408,8 +408,8 @@ ptyjs(){
 }
 
 buildPty() {
-  "$NPM" install pty.js@0.3.0
-  
+  "$NPM" install pty.js@0.3.1
+
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
     echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`

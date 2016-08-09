@@ -21,10 +21,10 @@ else
   exit 1
 fi
 
-IS_HOSTED=false
+C9_DIR=$HOME/.c9
 while [ $# -gt 0 ]; do
   case "$1" in
-    -h | --hosted ) IS_HOSTED=true;
+    -d | --dest-dir ) C9_DIR="$2"; shift 2;;
   esac
   shift
 done
@@ -32,13 +32,6 @@ done
 VERSION=1
 NODE_VERSION=v6.3.1
 NODE_VERSION_ARM_PI=v0.10.28
-
-if [ "$IS_HOSTED" = true ]; then
-  C9_DIR=/opt/c9
-else
-  C9_DIR=$HOME/.c9
-fi
-
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 

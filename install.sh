@@ -29,6 +29,11 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# Check if C9_DIR exists
+if [ ! -d "$C9_DIR" ]; then
+  mkdir -p $C9_DIR
+fi
+
 VERSION=1
 NODE_VERSION=v6.3.1
 NODE_VERSION_ARM_PI=v0.10.28

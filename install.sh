@@ -315,12 +315,12 @@ check_tmux_version(){
   if [ ! -x $1 ]; then
     return 1
   fi
-  tmux_version=$($1 -V | sed -e's/^[a-z0-9.-]* //g')  
+  tmux_version=$($1 -V | sed -e's/[a-z ]//g')  
   if [ ! "$tmux_version" ]; then
     return 1
   fi
 
-  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version")" == "True" ]; then
+  if [ $("$PYTHON" -c "print 1.7<=$tmux_version") == "True" ]; then
     return 0
   else
     return 1

@@ -133,11 +133,7 @@ start() {
       # finalize
       pushd "$C9_DIR"/node_modules/.bin
       for FILE in "$C9_DIR"/node_modules/.bin/*; do
-        if [ "$os" == darwin ]; then
-          sed -i "" -E s:'#!/usr/bin/env node':"#!$NODE":g "$(readlink "$FILE")"
-        else
-          sed -i -E s:'#!/usr/bin/env node':"#!$NODE":g "$(readlink "$FILE")"
-        fi
+        sed -i -e's/#!\/usr\/bin\/env node/#!'"${NODE//\//\\/}/" "$(readlink "$FILE")"
       done
       popd
       

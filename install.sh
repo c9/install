@@ -133,11 +133,10 @@ start() {
       # finalize
       pushd "$C9_DIR"/node_modules/.bin
       for FILE in "$C9_DIR"/node_modules/.bin/*; do
-        if [ "$os" == darwin ]; then
-          sed -i "" -E s:'#!/usr/bin/env node':"#!$NODE":g "$(readlink "$FILE")"
-        else
-          sed -i -E s:'#!/usr/bin/env node':"#!$NODE":g "$(readlink "$FILE")"
-        fi
+        FILE=$(readlink "$FILE")
+        # can't use the -i flag since it is not compatible between bsd and gnu versions
+        sed -e's/#!\/usr\/bin\/env node/#!'"${NODE//\//\\/}/" "$FILE" > "$FILE.tmp-sed"
+        mv "$FILE.tmp-sed" "$FILE"
       done
       popd
       
@@ -318,7 +317,7 @@ check_tmux_version(){
   if [ ! -x "$1" ]; then
     return 1
   fi
-  tmux_version=$($1 -V | sed -e's/^[a-z0-9.-]* //g')  
+  tmux_version=$($1 -V | sed -e's/^[a-z0-9.-]* //g' | sed -e's/[a-z]*$//')  
   if [ ! "$tmux_version" ]; then
     return 1
   fi

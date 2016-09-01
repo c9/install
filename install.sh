@@ -116,16 +116,17 @@ start() {
       mkdir -p "$C9_DIR"/bin
       mkdir -p "$C9_DIR"/tmp
       mkdir -p "$C9_DIR"/node_modules
-      cd "$C9_DIR"
     
       # install packages
       while [ $# -ne 0 ]
       do
         if [ "$1" == "tmux" ]; then
+          cd "$C9_DIR"
           time tmux_install $os $arch
           shift
           continue
         fi
+        cd "$C9_DIR"
         time eval ${1} $os $arch
         shift
       done

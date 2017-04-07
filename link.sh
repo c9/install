@@ -31,6 +31,7 @@
 #==========================================#
 #================= script =================#
 
+pwd=`pwd`
 C9_DIR="$HOME/.c9";
 mkdir -p "$C9_DIR";
 cd "$C9_DIR";
@@ -59,3 +60,5 @@ npm i https://github.com/c9/nak/tarball/c9
 # let cloud9 know that evertyhing is installed
 echo 1 > installed
 
+# return to where we started from
+cd "$pwd"

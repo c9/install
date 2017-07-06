@@ -14,7 +14,7 @@ exec 2>&1
 
 if has "wget"; then
   DOWNLOAD() {
-    wget --no-check-certificate -nc -O "$2" "$1"
+    wget -nc -O "$2" "$1"
   }
 elif has "curl"; then
   DOWNLOAD() {

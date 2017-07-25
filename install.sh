@@ -2,7 +2,6 @@
 set -e
 has() {
   type "$1" > /dev/null 2>&1
-  return $?
 }
 
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"

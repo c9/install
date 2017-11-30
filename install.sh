@@ -142,6 +142,10 @@ start() {
       popd
       
       echo $VERSION > "$C9_DIR"/installed
+      
+      cd "$C9_DIR"
+      DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/license-notice.md "Third-Party Licensing Notices.md"
+      
       echo :Done.
     ;;
     

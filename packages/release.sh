@@ -11,6 +11,8 @@ buildPtyRelease() {
   cd "$C9_DIR"
   buildPty
   pushd node_modules/pty.js/
+  mkdir -p node_modules
+  cp -R ../extend node_modules
   rm -rf tmp
   mkdir -p tmp
   cp build/Release/pty.node tmp/pty.node

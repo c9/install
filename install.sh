@@ -25,7 +25,7 @@ else
 fi
 
 VERSION=1
-NODE_VERSION=v4.4.6
+NODE_VERSION=v8.9.4
 C9_DIR=$HOME/.c9
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
@@ -116,7 +116,7 @@ start() {
       mkdir -p "$C9_DIR"/bin
       mkdir -p "$C9_DIR"/tmp
       mkdir -p "$C9_DIR"/node_modules
-    
+      
       # install packages
       while [ $# -ne 0 ]
       do
@@ -378,9 +378,10 @@ tmux_install(){
 
 collab(){
   echo :Installing Collab Dependencies
-  "$NPM" cache clean
-  "$NPM" install sqlite3@3.1.4
-  "$NPM" install sequelize@2.0.0-beta.0
+      rm -f "$C9_DIR"/package.json
+      rm -f "$C9_DIR"/package-lock.json
+  run-npm-install sqlite3@3.1.13 sequelize@2.0.0-beta.0
+  
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
   DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz sqlite3.tar.gz
@@ -391,7 +392,7 @@ collab(){
 
 nak(){
   echo :Installing Nak
-  "$NPM" install https://github.com/c9/nak/tarball/c9
+  run-npm-install https://github.com/c9/nak/tarball/c9
 }
 
 ptyjs(){
@@ -414,7 +415,7 @@ ptyjs(){
 }
 
 buildPty() {
-  "$NPM" install pty.js@0.3.0
+  run-npm-install pty.js@0.3.1
   
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
@@ -432,27 +433,33 @@ hasPty() {
 
 coffee(){
   echo :Installing Coffee Script
-  "$NPM" install coffee
+  run-npm-install coffee
 }
 
 less(){
   echo :Installing Less
-  "$NPM" install less
+  run-npm-install less
 }
 
 sass(){
   echo :Installing Sass
-  "$NPM" install sass
+  run-npm-install sass
 }
 
 typescript(){
   echo :Installing TypeScript
-  "$NPM" install typescript  
+  run-npm-install typescript  
 }
 
 stylus(){
   echo :Installing Stylus
-  "$NPM" install stylus  
+  run-npm-install stylus  
+}
+
+run-npm-install(){
+  rm -f "$C9_DIR"/package.json
+  rm -f "$C9_DIR"/package-lock.json
+  run-npm-install --production $@
 }
 
 # go(){

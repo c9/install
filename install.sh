@@ -402,35 +402,17 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
-  
-  if [ "$arch" == "x64" ] && [ "$os" == "linux" ] ; then
-    $DOWNLOAD https://github.com/c9/install/releases/download/bin/pty-$NODE_VERSION-$os-$arch.tar.gz \
-      && rm -rf pty.js node_modules/pty.js \
-      && tar -U -zxf pty-$NODE_VERSION-$os-$arch.tar.gz \
-      && mv pty.js node_modules \
-      && rm -f pty-$NODE_VERSION-$os-$arch.tar.gz \
-      || :
-    if hasPty; then
-      return 0
-    fi
-    rm -rf pty.js node_modules/pty.js
-  fi
-  echo :prcompiled pty.js not found building from source
-  buildPty
-}
-
-buildPty() {
-  "$NPM" install pty.js@0.3.1
+  "$NPM" install node-pty-prebuilt@0.7.3
 
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
-    echo `"$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"`
+    echo `"$C9_DIR/node/bin/node" -e "console.log(require('node-pty-prebuilt'))"`
     exit 100
   fi
 }
 
 hasPty() {
-  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('pty.js').createTerminal=='function'" 2> /dev/null ` 
+  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('node-pty-prebuilt').createTerminal=='function'" 2> /dev/null ` 
   if [ "$HASPTY" != true ]; then
     return 1
   fi

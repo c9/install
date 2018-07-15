@@ -31,7 +31,7 @@ esac
 
 # download source files for tmux, libevent, and ncurses
 wget -O tmux-1.6.tar.gz http://sourceforge.net/projects/tmux/files/tmux/tmux-1.6/tmux-1.6.tar.gz/download
-wget https://github.com/downloads/libevent/libevent/libevent-2.0.19-stable.tar.gz
+wget https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz 
 wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz
 
 # extract files, configure, and compile
@@ -39,8 +39,8 @@ wget ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz
 ############
 # libevent #
 ############
-tar xvzf libevent-2.0.19-stable.tar.gz
-cd libevent-2.0.19-stable
+tar xvzf libevent-2.1.8-stable.tar.gz
+cd libevent-2.1.8-stable
 ./configure --prefix=$BASE/local --disable-shared
 make
 make install

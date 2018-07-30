@@ -21,14 +21,6 @@ else
   exit 1
 fi
 
-C9_DIR=$HOME/.c9
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -d | --dest-dir ) C9_DIR="$2"; shift;;
-  esac
-  shift
-done
-
 # Check if C9_DIR exists
 if [ ! -d "$C9_DIR" ]; then
   mkdir -p $C9_DIR

@@ -1,5 +1,5 @@
 #!/bin/bash -e
-set -e
+set -euo pipefail
 has() {
   type "$1" > /dev/null 2>&1
   return $?

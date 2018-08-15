@@ -21,6 +21,7 @@ else
   exit 1
 fi
 
+C9_DIR=$HOME/.c9
 # Check if C9_DIR exists
 if [ ! -d "$C9_DIR" ]; then
   mkdir -p $C9_DIR

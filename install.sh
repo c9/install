@@ -311,8 +311,7 @@ tmux_download(){
   # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
   $DOWNLOAD https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
   echo ":Downloading Ncurses..."
-  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz
-  $DOWNLOAD http://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz
+  $DOWNLOAD https://github.com/c9/install/blob/replace-pty-js/packages/tmux/ncurses-6.0.tar.gz
   echo ":Downloading Tmux..."
   # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
   $DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz

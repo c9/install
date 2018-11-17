@@ -213,7 +213,7 @@ check_python() {
 
 # NodeJS
 
-downlaod_virtualenv() {
+download_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
   DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
   tar xzf $VIRTUALENV_VERSION.tar.gz
@@ -231,7 +231,7 @@ ensure_local_gyp() {
     if has virtualenv; then
       virtualenv -p python2 "$C9_DIR/python"
     else
-      downlaod_virtualenv
+      download_virtualenv
       "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
     fi
     if [[ -f "$C9_DIR/python/bin/python2" ]]; then

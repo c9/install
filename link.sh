@@ -52,7 +52,7 @@ popd
 # install required node modules
 mkdir -p node_modules
 npm i pty.js
-npm i sqlite3 sequelize@2.0.0-beta.0
+npm i sqlite3@3.1.8 sequelize@2.0.0-beta.0
 
 npm i https://github.com/c9/nak/tarball/c9
 

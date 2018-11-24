@@ -2,7 +2,6 @@
 set -e
 has() {
   type "$1" > /dev/null 2>&1
-  return $?
 }
 
 # Redirect stdout ( > ) into a named pipe ( >() ) running "tee"
@@ -13,9 +12,13 @@ has() {
 exec 2>&1
 
 if has "wget"; then
-  DOWNLOAD="wget --no-check-certificate -nc"
+  DOWNLOAD() {
+    wget --no-check-certificate -nc -O "$2" "$1"
+  }
 elif has "curl"; then
-  DOWNLOAD="curl -sSOL"
+  DOWNLOAD() {
+    curl -sSL -o "$2" "$1"
+  }
 else
   echo "Error: you need curl or wget to proceed" >&2;
   exit 1
@@ -68,6 +71,7 @@ start() {
     MINGW*) os=windows ;;
   esac
   case "$arch" in
+    *arm64*) arch=arm64 ;;
     *aarch64*) arch=arm64 ;;
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
@@ -124,16 +128,17 @@ start() {
       mkdir -p "$C9_DIR"/bin
       mkdir -p "$C9_DIR"/tmp
       mkdir -p "$C9_DIR"/node_modules
-      cd "$C9_DIR"
     
       # install packages
       while [ $# -ne 0 ]
       do
         if [ "$1" == "tmux" ]; then
+          cd "$C9_DIR"
           time tmux_install $os $arch
           shift
           continue
         fi
+        cd "$C9_DIR"
         time eval ${1} $os $arch
         shift
       done
@@ -141,15 +146,18 @@ start() {
       # finalize
       pushd "$C9_DIR"/node_modules/.bin
       for FILE in "$C9_DIR"/node_modules/.bin/*; do
-        if [ `uname` == Darwin ]; then
-          sed -i "" -E s:'#!/usr/bin/env node':"#!$NODE":g $(readlink $FILE)
-        else
-          sed -i -E s:'#!/usr/bin/env node':"#!$NODE":g $(readlink $FILE)
-        fi
+        FILE=$(readlink "$FILE")
+        # can't use the -i flag since it is not compatible between bsd and gnu versions
+        sed -e's/#!\/usr\/bin\/env node/#!'"${NODE//\//\\/}/" "$FILE" > "$FILE.tmp-sed"
+        mv "$FILE.tmp-sed" "$FILE"
       done
       popd
       
       echo $VERSION > "$C9_DIR"/installed
+      
+      cd "$C9_DIR"
+      DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/license-notice.md "Third-Party Licensing Notices.md"
+      
       echo :Done.
     ;;
     
@@ -217,9 +225,9 @@ check_python() {
 
 # NodeJS
 
-downlaod_virtualenv() {
+download_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
-  $DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz"
+  DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
   tar xzf $VIRTUALENV_VERSION.tar.gz
   rm $VIRTUALENV_VERSION.tar.gz
   mv $VIRTUALENV_VERSION virtualenv
@@ -235,7 +243,7 @@ ensure_local_gyp() {
     if has virtualenv; then
       virtualenv -p python2 "$C9_DIR/python"
     else
-      downlaod_virtualenv
+      download_virtualenv
       "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
     fi
     if [[ -f "$C9_DIR/python/bin/python2" ]]; then
@@ -257,14 +265,14 @@ ensure_local_gyp() {
 node(){
   # clean up 
   rm -rf node 
-  rm -rf node-$NODE_VERSION*
+  rm -rf node.tar.gz
   
   echo :Installing Node $NODE_VERSION
   
-  $DOWNLOAD https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz
-  tar xzf node-$NODE_VERSION-$1-$2.tar.gz
-  mv node-$NODE_VERSION-$1-$2 node
-  rm node-$NODE_VERSION-$1-$2.tar.gz
+  DOWNLOAD https://nodejs.org/dist/"$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz" node.tar.gz
+  tar xzf node.tar.gz
+  mv "node-$NODE_VERSION-$1-$2" node
+  rm -f node.tar.gz
 
   # use local npm cache
   "$NPM" config -g set cache  "$C9_DIR/tmp/.npm"
@@ -325,10 +333,10 @@ tmux_download(){
 }
 
 check_tmux_version(){
-  if [ ! -x $1 ]; then
+  if [ ! -x "$1" ]; then
     return 1
   fi
-  tmux_version=$($1 -V | sed -e's/^[a-z0-9.-]* //g')  
+  tmux_version=$($1 -V | sed -e's/^[a-z0-9.-]* //g' | sed -e's/[a-z]*$//')  
   if [ ! "$tmux_version" ]; then
     return 1
   fi
@@ -343,24 +351,26 @@ check_tmux_version(){
 tmux_install(){
   echo :Installing TMUX
   mkdir -p "$C9_DIR/bin"
-  if check_tmux_version $C9_DIR/bin/tmux; then
+  if check_tmux_version "$C9_DIR/bin/tmux"; then
     echo ':Existing tmux version is up-to-date'
   
   # If we can support tmux 1.9 or detect upgrades, the following would work:
-  elif has "tmux" && check_tmux_version `which tmux`; then
+  elif has "tmux" && check_tmux_version "$(which tmux)"; then
     echo ':A good version of tmux was found, creating a symlink'
-    ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+    ln -sf "$(which tmux)" "$C9_DIR"/bin/tmux
     return 0
   
   # If tmux is not present or at the wrong version, we will install it
   else
     if [ $os = "darwin" ]; then
       if ! has "brew"; then
-        ruby -e "$($DOWNLOAD https://raw.githubusercontent.com/mxcl/homebrew/go/install)"
+        # http://brew.sh/
+        DOWNLOAD https://raw.githubusercontent.com/Homebrew/install/master/install installbrew
+        ruby installbrew
       fi
       brew install tmux > /dev/null ||
         (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
-      ln -sf $(which tmux) "$C9_DIR"/bin/tmux
+      ln -sf "$(which tmux)" "$C9_DIR"/bin/tmux
     # Linux
     else
       if ! has "make"; then
@@ -387,7 +397,7 @@ collab(){
   "$NPM" install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
-  $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz
+  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz sqlite3.tar.gz
   tar xzf sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
@@ -457,7 +467,7 @@ stylus(){
   
 # }
 
-start $@
+start "$@"
 
 # cleanup tmp files
 rm -rf "$C9_DIR/tmp"

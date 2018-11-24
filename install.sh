@@ -323,13 +323,13 @@ tmux_download(){
   echo ":N.B: This will take a while. To speed this up install tmux 2.2 manually on your machine and restart this process."
   
   echo ":Downloading Libevent..."
-  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
-  $DOWNLOAD https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz
+  # DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.0.21-stable.tar.gz
+  DOWNLOAD https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz libevent-2.0.22-stable.tar.gz
   echo ":Downloading Ncurses..."
-  $DOWNLOAD https://github.com/c9/install/raw/replace-pty-js/packages/tmux/ncurses-6.0.tar.gz
+  DOWNLOAD https://github.com/c9/install/raw/replace-pty-js/packages/tmux/ncurses-6.0.tar.gz ncurses-6.0.tar.gz
   echo ":Downloading Tmux..."
-  # $DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
-  $DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz
+  # DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
+  DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz tmux-2.2.tar.gz
 }
 
 check_tmux_version(){
@@ -341,7 +341,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version")" == "True" ]; then
+  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version and $tmux_version <= 2.2")" == "True" ]; then
     return 0
   else
     return 1
@@ -414,13 +414,13 @@ ptyjs(){
 
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
-    echo `"$C9_DIR/node/bin/node" -e "console.log(require('node-pty-prebuilt'))"`
+    "$C9_DIR/node/bin/node" -e "console.log(require('node-pty-prebuilt'))"
     exit 100
   fi
 }
 
 hasPty() {
-  local HASPTY=`"$C9_DIR/node/bin/node" -p "typeof require('node-pty-prebuilt').createTerminal=='function'" 2> /dev/null ` 
+  local HASPTY=$("$C9_DIR/node/bin/node" -p "typeof require('node-pty-prebuilt').createTerminal=='function'" 2> /dev/null)
   if [ "$HASPTY" != true ]; then
     return 1
   fi

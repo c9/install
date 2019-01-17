@@ -24,9 +24,20 @@ else
   exit 1
 fi
 
-VERSION=1
-NODE_VERSION=v4.8.7
 C9_DIR=$HOME/.c9
+if [[ ${1-} == -d ]]; then
+    C9_DIR=$2
+    shift 2
+fi
+
+# Check if C9_DIR exists
+if [ ! -d "$C9_DIR" ]; then
+  mkdir -p $C9_DIR
+fi
+
+VERSION=1
+NODE_VERSION=v6.3.1
+NODE_VERSION_ARM_PI=v0.10.28
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 
@@ -61,6 +72,7 @@ start() {
   esac
   case "$arch" in
     *arm64*) arch=arm64 ;;
+    *aarch64*) arch=arm64 ;;
     *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
     *x86_64*) arch=x64 ;;
@@ -70,16 +82,16 @@ start() {
       exit 1
     ;;
   esac
-  
+
   if [ "$arch" == "x64" ] && [[ $HOSTTYPE == i*86 ]]; then
     arch=x86 # check if 32 bit bash is installed on 64 bit kernel
   fi
-  
+
   if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
     exit 1
   fi
-  
+
   case $1 in
     "help" )
       echo
@@ -213,7 +225,7 @@ check_python() {
 
 # NodeJS
 
-downlaod_virtualenv() {
+download_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
   DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
   tar xzf $VIRTUALENV_VERSION.tar.gz
@@ -231,7 +243,7 @@ ensure_local_gyp() {
     if has virtualenv; then
       virtualenv -p python2 "$C9_DIR/python"
     else
-      downlaod_virtualenv
+      download_virtualenv
       "$PYTHON" virtualenv/virtualenv.py "$C9_DIR/python"
     fi
     if [[ -f "$C9_DIR/python/bin/python2" ]]; then
@@ -275,7 +287,7 @@ compile_tmux(){
   rm libevent-2.1.8-stable.tar.gz
   cd libevent-2.1.8-stable
   echo ":Configuring Libevent"
-  ./configure --prefix="$C9_DIR/local"
+  ./configure --disable-shared --prefix="$C9_DIR/local"
   echo ":Compiling Libevent"
   make
   echo ":Installing libevent"
@@ -283,9 +295,9 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling ncurses..."
-  tar xzf ncurses-5.9.tar.gz
-  rm ncurses-5.9.tar.gz
-  cd ncurses-5.9
+  tar xzf ncurses-6.0.tar.gz
+  rm ncurses-6.0.tar.gz
+  cd ncurses-6.0
   echo ":Configuring Ncurses"
   CPPFLAGS=-P ./configure --prefix="$C9_DIR/local" --without-tests --without-cxx
   echo ":Compiling Ncurses"
@@ -295,11 +307,11 @@ compile_tmux(){
  
   cd "$C9_DIR"
   echo ":Compiling tmux..."
-  tar xzf tmux-1.9.tar.gz
-  rm tmux-1.9.tar.gz
-  cd tmux-1.9
+  tar xzf tmux-2.2.tar.gz
+  rm tmux-2.2.tar.gz
+  cd tmux-2.2
   echo ":Configuring Tmux"
-  ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" CPPFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" LIBEVENT_CFLAGS="-I$C9_DIR/local/include" LIBEVENT_LIBS="-static -L$C9_DIR/local/lib -levent" LIBS="-L$C9_DIR/local/lib/ncurses -lncurses" --prefix="$C9_DIR/local"
+  ./configure CFLAGS="-I$C9_DIR/local/include -I$C9_DIR/local/include/ncurses" LDFLAGS="-static-libgcc -L$C9_DIR/local/lib" --prefix="$C9_DIR/local"
   echo ":Compiling Tmux"
   make
   echo ":Installing Tmux"
@@ -308,14 +320,15 @@ compile_tmux(){
 
 tmux_download(){
   echo ":Downloading tmux source code"
-  echo ":N.B: This will take a while. To speed this up install tmux 1.9 manually on your machine and restart this process."
+  echo ":N.B: This will take a while. To speed this up install tmux 2.2 manually on your machine and restart this process."
   
   echo ":Downloading Libevent..."
   DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.1.8-stable.tar.gz libevent-2.1.8-stable.tar.gz
   echo ":Downloading Ncurses..."
-  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/ncurses-5.9.tar.gz ncurses-5.9.tar.gz
+  DOWNLOAD https://github.com/c9/install/raw/master/packages/tmux/ncurses-6.0.tar.gz ncurses-6.0.tar.gz
   echo ":Downloading Tmux..."
-  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz tmux-1.9.tar.gz
+  # DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
+  DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz tmux-2.2.tar.gz
 }
 
 check_tmux_version(){
@@ -327,7 +340,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version")" == "True" ]; then
+  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version and $tmux_version <= 2.2")" == "True" ]; then
     return 0
   else
     return 1
@@ -396,35 +409,17 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
-  
-  if [ "$arch" == "x64" ] && [ "$os" == "linux" ] ; then
-    rm -rf pty.js node_modules/pty.js pty.js.tar.gz \
-      && DOWNLOAD https://github.com/c9/install/releases/download/bin/pty-$NODE_VERSION-$os-$arch.tar.gz pty.js.tar.gz \
-      && tar -U -zxf pty.js.tar.gz \
-      && mv pty.js node_modules \
-      && rm -f pty.js.tar.gz \
-      || :
-    if hasPty; then
-      return 0
-    fi
-    rm -rf pty.js node_modules/pty.js
-  fi
-  echo :prcompiled pty.js not found building from source
-  buildPty
-}
+  "$NPM" install node-pty-prebuilt@0.7.3
 
-buildPty() {
-  "$NPM" install pty.js@0.3.0
-  
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
-    "$C9_DIR/node/bin/node" -e "console.log(require('pty.js'))"
+    "$C9_DIR/node/bin/node" -e "console.log(require('node-pty-prebuilt'))"
     exit 100
   fi
 }
 
 hasPty() {
-  local HASPTY=$("$C9_DIR/node/bin/node" -p "typeof require('pty.js').createTerminal=='function'")
+  local HASPTY=$("$C9_DIR/node/bin/node" -p "typeof require('node-pty-prebuilt').createTerminal=='function'" 2> /dev/null)
   if [ "$HASPTY" != true ]; then
     return 1
   fi

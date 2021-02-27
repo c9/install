@@ -340,7 +340,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version and $tmux_version <= 2.2")" == "True" ]; then
+  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version and $tmux_version <= 3.0")" == "True" ]; then
     return 0
   else
     return 1

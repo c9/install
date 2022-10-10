@@ -115,6 +115,7 @@ start() {
       echo "sass - Sass"
       echo "typescript - TypeScript"
       echo "stylus - Stylus"
+      echo "codeintel - CodeIntel"
       # echo "go - Go"
       # echo "heroku - Heroku"
       # echo "rhc - RedHat OpenShift"
@@ -163,7 +164,7 @@ start() {
     
     "base" )
       echo "Installing base packages. Use --help for more options"
-      start install node tmux_install nak ptyjs collab
+      start install node tmux_install nak ptyjs collab codeintel
     ;;
     
     * )
@@ -219,6 +220,11 @@ check_python() {
 
   if [[ $PYTHONVERSION != "2.7" ]]; then
     echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again. You can find more information on how to install Python in the docs: https://docs.aws.amazon.com/cloud9/latest/user-guide/ssh-settings.html#ssh-settings-requirements"
+    exit 100
+  fi
+  
+  if ! which pip &> /dev/null; then
+    echo "pip is required to install CodeIntel. Please install pip and try again"
     exit 100
   fi
 }
@@ -448,6 +454,20 @@ typescript(){
 stylus(){
   echo :Installing Stylus
   "$NPM" install stylus  
+}
+
+codeintel(){
+  echo :Installing CodeIntel
+  pip install inflector==2.0.12
+
+  mkdir -p /tmp/codeintel
+  cd /tmp/codeintel
+  pip download -d /tmp/codeintel codeintel==0.9.3 inflector==2.0.12
+  tar xf CodeIntel-0.9.3.tar.gz
+  mv CodeIntel-0.9.3/SilverCity CodeIntel-0.9.3/silvercity
+  tar czf CodeIntel-0.9.3.tar.gz CodeIntel-0.9.3
+  pip install -U --no-index --find-links=/tmp/codeintel codeintel inflector==2.0.12
+  rm -rf /tmp/codeintel
 }
 
 # go(){

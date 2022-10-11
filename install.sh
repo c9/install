@@ -24,6 +24,8 @@ else
   exit 1
 fi
 
+# Specify the CDN URL using `PROD_CLOUDFRONT_URL=...`. Defaults to us-west-2 region url
+PROD_CLOUDFRONT_URL=${PROD_CLOUDFRONT_URL:-'https://dhj20r2nmszcd.cloudfront.net/static'}
 C9_DIR=$HOME/.c9
 if [[ ${1-} == -d ]]; then
     C9_DIR=$2
@@ -36,8 +38,7 @@ if [ ! -d "$C9_DIR" ]; then
 fi
 
 VERSION=1
-NODE_VERSION=v6.3.1
-NODE_VERSION_ARM_PI=v0.10.28
+NODE_VERSION=v12.16.1
 NPM=$C9_DIR/node/bin/npm
 NODE=$C9_DIR/node/bin/node
 
@@ -73,19 +74,13 @@ start() {
   case "$arch" in
     *arm64*) arch=arm64 ;;
     *aarch64*) arch=arm64 ;;
-    *armv6l*) arch=armv6l ;;
     *armv7l*) arch=armv7l ;;
     *x86_64*) arch=x64 ;;
-    *i*86*) arch=x86 ;;
     *)
       echo "Unsupported Architecture: $os $arch" 1>&2
       exit 1
     ;;
   esac
-
-  if [ "$arch" == "x64" ] && [[ $HOSTTYPE == i*86 ]]; then
-    arch=x86 # check if 32 bit bash is installed on 64 bit kernel
-  fi
 
   if [ "$os" != "linux" ] && [ "$os" != "darwin" ]; then
     echo "Unsupported Platform: $os $arch" 1>&2
@@ -115,10 +110,6 @@ start() {
       echo "sass - Sass"
       echo "typescript - TypeScript"
       echo "stylus - Stylus"
-      # echo "go - Go"
-      # echo "heroku - Heroku"
-      # echo "rhc - RedHat OpenShift"
-      # echo "gae - Google AppEngine"
     ;;
     
     "install" )
@@ -156,7 +147,7 @@ start() {
       echo $VERSION > "$C9_DIR"/installed
       
       cd "$C9_DIR"
-      DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/license-notice.md "Third-Party Licensing Notices.md"
+      DOWNLOAD "$PROD_CLOUDFRONT_URL/license-notice.md" "Third-Party Licensing Notices.md"
       
       echo :Done.
     ;;
@@ -209,16 +200,14 @@ check_deps() {
 }
 
 check_python() {
-  if type -P python2.7 &> /dev/null; then
-    PYTHONVERSION="2.7"
-    PYTHON="python2.7"
+  if type -P python3 &> /dev/null; then
+    PYTHON="python3"
   elif type -P python &> /dev/null; then
-    PYTHONVERSION=`python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'`
     PYTHON="python"
   fi
-
-  if [[ $PYTHONVERSION != "2.7" ]]; then
-    echo "Python version 2.7 is required to install pty.js. Please install python 2.7 and try again. You can find more information on how to install Python in the docs: https://docs.aws.amazon.com/cloud9/latest/user-guide/ssh-settings.html#ssh-settings-requirements"
+  
+  if ! type -P "$PYTHON" &> /dev/null; then
+    echo "Python version is required to install pty.js. Please install python and try again. You can find more information on how to install Python in the docs: https://docs.aws.amazon.com/cloud9/latest/user-guide/ssh-settings.html#ssh-settings-requirements"
     exit 100
   fi
 }
@@ -227,7 +216,7 @@ check_python() {
 
 download_virtualenv() {
   VIRTUALENV_VERSION="virtualenv-12.0.7"
-  DOWNLOAD "https://pypi.python.org/packages/source/v/virtualenv/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/$VIRTUALENV_VERSION.tar.gz" $VIRTUALENV_VERSION.tar.gz
   tar xzf $VIRTUALENV_VERSION.tar.gz
   rm $VIRTUALENV_VERSION.tar.gz
   mv $VIRTUALENV_VERSION virtualenv
@@ -269,7 +258,7 @@ node(){
   
   echo :Installing Node $NODE_VERSION
   
-  DOWNLOAD https://nodejs.org/dist/"$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz" node.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/node-$NODE_VERSION/node-$NODE_VERSION-$1-$2.tar.gz" node.tar.gz
   tar xzf node.tar.gz
   mv "node-$NODE_VERSION-$1-$2" node
   rm -f node.tar.gz
@@ -323,12 +312,11 @@ tmux_download(){
   echo ":N.B: This will take a while. To speed this up install tmux 2.2 manually on your machine and restart this process."
   
   echo ":Downloading Libevent..."
-  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/libevent-2.1.8-stable.tar.gz libevent-2.1.8-stable.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/libevent-2.1.8-stable.tar.gz" libevent-2.1.8-stable.tar.gz
   echo ":Downloading Ncurses..."
-  DOWNLOAD https://github.com/c9/install/raw/master/packages/tmux/ncurses-6.0.tar.gz ncurses-6.0.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/ncurses-6.0.tar.gz" ncurses-6.0.tar.gz
   echo ":Downloading Tmux..."
-  # DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/tmux/tmux-1.9.tar.gz
-  DOWNLOAD https://github.com/tmux/tmux/releases/download/2.2/tmux-2.2.tar.gz tmux-2.2.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/tmux-2.2.tar.gz" tmux-2.2.tar.gz
 }
 
 check_tmux_version(){
@@ -340,7 +328,7 @@ check_tmux_version(){
     return 1
   fi
 
-  if [ "$("$PYTHON" -c "print 1.7<=$tmux_version and $tmux_version <= 2.2")" == "True" ]; then
+  if [ "$("$PYTHON" -c "print(1.7<=$tmux_version and $tmux_version <= 2.2)")" == "True" ]; then
     return 0
   else
     return 1
@@ -361,26 +349,14 @@ tmux_install(){
   
   # If tmux is not present or at the wrong version, we will install it
   else
-    if [ $os = "darwin" ]; then
-      if ! has "brew"; then
-        # http://brew.sh/
-        DOWNLOAD https://raw.githubusercontent.com/Homebrew/install/master/install installbrew
-        ruby installbrew
-      fi
-      brew install tmux > /dev/null ||
-        (brew remove tmux &>/dev/null && brew install tmux >/dev/null)
-      ln -sf "$(which tmux)" "$C9_DIR"/bin/tmux
-    # Linux
-    else
-      if ! has "make"; then
-        echo ":Could not find make. Please install make and try again."
-        exit 100;
-      fi
-    
-      tmux_download  
-      compile_tmux
-      ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
+    if ! has "make"; then
+      echo ":Could not find make. Please install make and try again."
+      exit 100;
     fi
+
+    tmux_download
+    compile_tmux
+    ln -sf "$C9_DIR"/local/bin/tmux "$C9_DIR"/bin/tmux
   fi
   
   if ! check_tmux_version "$C9_DIR"/bin/tmux; then
@@ -391,12 +367,11 @@ tmux_install(){
 
 collab(){
   echo :Installing Collab Dependencies
-  "$NPM" cache clean
-  "$NPM" install sqlite3@3.1.4
+  "$NPM" install sqlite3@4.1.1
   "$NPM" install sequelize@2.0.0-beta.0
   mkdir -p "$C9_DIR"/lib
   cd "$C9_DIR"/lib
-  DOWNLOAD https://raw.githubusercontent.com/c9/install/master/packages/sqlite3/linux/sqlite3.tar.gz sqlite3.tar.gz
+  DOWNLOAD "$PROD_CLOUDFRONT_URL/sqlite3.tar.gz" sqlite3.tar.gz
   tar xzf sqlite3.tar.gz
   rm sqlite3.tar.gz
   ln -sf "$C9_DIR"/lib/sqlite3/sqlite3 "$C9_DIR"/bin/sqlite3
@@ -409,17 +384,17 @@ nak(){
 
 ptyjs(){
   echo :Installing pty.js
-  "$NPM" install node-pty-prebuilt@0.7.3
+  "$NPM" install @ionic/node-pty-prebuilt@0.9.1
 
   if ! hasPty; then
     echo "Unknown exception installing pty.js"
-    "$C9_DIR/node/bin/node" -e "console.log(require('node-pty-prebuilt'))"
+    "$C9_DIR/node/bin/node" -e "console.log(require('@ionic/node-pty-prebuilt'))"
     exit 100
   fi
 }
 
 hasPty() {
-  local HASPTY=$("$C9_DIR/node/bin/node" -p "typeof require('node-pty-prebuilt').createTerminal=='function'" 2> /dev/null)
+  local HASPTY=$("$C9_DIR/node/bin/node" -p "typeof require('@ionic/node-pty-prebuilt').createTerminal=='function'" 2> /dev/null)
   if [ "$HASPTY" != true ]; then
     return 1
   fi
@@ -449,22 +424,6 @@ stylus(){
   echo :Installing Stylus
   "$NPM" install stylus  
 }
-
-# go(){
-  
-# }
-
-# heroku(){
-  
-# }
-
-# rhc(){
-  
-# }
-
-# gae(){
-  
-# }
 
 start "$@"
 

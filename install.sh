@@ -207,7 +207,7 @@ check_python() {
   fi
   
   if ! type -P "$PYTHON" &> /dev/null; then
-    echo "Python version is required to install pty.js. Please install python and try again. You can find more information on how to install Python in the docs: https://docs.c9.io/ssh_workspaces.html"
+    echo "Python version is required to install pty.js. Please install python and try again. You can find more information on how to install Python in the docs: https://docs.aws.amazon.com/cloud9/latest/user-guide/ssh-settings.html#ssh-settings-requirements"
     exit 100
   fi
 }

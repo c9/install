@@ -1,11 +1,12 @@
-Cloud9 SSH installer
+(Deprecated) Cloud9 SSH installer
 ====================
 
-The SSH workspace type of Cloud9 IDE allows to connect the IDE to any SSH server.
-This repository contains the scripts to install all the required dependencies.
+This package is deprecated, please use [this hosted version of script](https://dhj20r2nmszcd.cloudfront.net/static/c9-install-2.0.0.sh)
 
-    curl -L https://raw.githubusercontent.com/c9/install/master/install.sh | bash
+You can run it as 
+
+    curl -L https://dhj20r2nmszcd.cloudfront.net/static/c9-install-2.0.0.sh | bash
 
 or
 
-    wget -O - https://raw.githubusercontent.com/c9/install/master/install.sh | bash
+    wget -O - https://dhj20r2nmszcd.cloudfront.net/static/c9-install-2.0.0.sh | bash
